@@ -1,0 +1,46 @@
+CREATE TABLE IF NOT EXISTS Customer (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    gender ENUM('Male', 'Female', 'Other') DEFAULT 'Other',
+    birthday DATE NOT NULL,
+    identification VARCHAR(20) NOT NULL UNIQUE,
+    hometown VARCHAR(255) NOT NULL,
+    rent_date DATE
+);
+
+CREATE TABLE IF NOT EXISTS Employee (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    hometown VARCHAR(255) NOT NULL,
+    identification VARCHAR(20) NOT NULL UNIQUE,
+    birthday DATE NOT NULL,
+    gender ENUM('Male', 'Female', 'Other') DEFAULT 'Other',
+    position ENUM('Manager', 'Receptionist', 'CleaningStaff', 'Other'),
+    salary INTEGER
+);
+
+CREATE TABLE IF NOT EXISTS Service (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL,
+    cost INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS Room (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    renter_id INTEGER,
+    is_rented BOOLEAN,
+    ren_date DATE,
+    order_date DATE,
+    price INTEGER NOT NULL,
+    bill_id INTEGER,
+    FOREIGN KEY (renter_id) REFERENCES Customer(id)
+);
+
+CREATE TABLE IF NOT EXISTS Bill (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    room_id INTEGER,
+    FOREIGN KEY (room_id) REFERENCES Room(id)
+);
+
+ALTER TABLE Room
+ADD CONSTRAINT fk_room_bill FOREIGN KEY (bill_id) REFERENCES Bill(id);
