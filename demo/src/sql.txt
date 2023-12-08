@@ -1,46 +1,60 @@
+CREATE TABLE IF NOT EXISTS User (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(50) NOT NULL,
+    role ENUM('Manager', 'Staff', 'Customer')
+);
+
 CREATE TABLE IF NOT EXISTS Customer (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    userID INTEGER,
     name VARCHAR(255) NOT NULL,
     gender ENUM('Male', 'Female', 'Other') DEFAULT 'Other',
     birthday DATE NOT NULL,
     identification VARCHAR(20) NOT NULL UNIQUE,
     hometown VARCHAR(255) NOT NULL,
-    rent_date DATE
+    rentDate DATE,
+    FOREIGN KEY (userID) REFERENCES User(id)
 );
 
 CREATE TABLE IF NOT EXISTS Employee (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    userID INTEGER,
     name VARCHAR(255) NOT NULL,
     hometown VARCHAR(255) NOT NULL,
     identification VARCHAR(20) NOT NULL UNIQUE,
     birthday DATE NOT NULL,
     gender ENUM('Male', 'Female', 'Other') DEFAULT 'Other',
-    position ENUM('Manager', 'Receptionist', 'CleaningStaff', 'Other'),
-    salary INTEGER
+    position ENUM('Manager', 'Staff') NOT NULL,
+    salary INTEGER,
+    FOREIGN KEY (userID) REFERENCES User(id)
 );
 
 CREATE TABLE IF NOT EXISTS Service (
-    id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(50) NOT NULL,
+    name VARCHAR(255) PRIMARY KEY NOT NULL,
     cost INTEGER NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS Room (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    renter_id INTEGER,
-    is_rented BOOLEAN,
-    ren_date DATE,
-    order_date DATE,
+    renterID INTEGER,
+    isRented BOOLEAN,
+    renDate DATE,
+    orderDate DATE,
+    orderCustomer_id INTEGER,
     price INTEGER NOT NULL,
-    bill_id INTEGER,
-    FOREIGN KEY (renter_id) REFERENCES Customer(id)
+    billID INTEGER,
+    FOREIGN KEY (renterID) REFERENCES Customer(id),
+    FOREIGN KEY (orderCustomer_id) REFERENCES Customer(id)
 );
 
 CREATE TABLE IF NOT EXISTS Bill (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    room_id INTEGER,
-    FOREIGN KEY (room_id) REFERENCES Room(id)
+    roomID INTEGER,
+    serviceName VARCHAR(255),
+    FOREIGN KEY (roomID) REFERENCES Room(id),
+    FOREIGN KEY (serviceName) REFERENCES Service(name)
 );
 
 ALTER TABLE Room
-ADD CONSTRAINT fk_room_bill FOREIGN KEY (bill_id) REFERENCES Bill(id);
+ADD CONSTRAINT fk_room_bill FOREIGN KEY (billID) REFERENCES Bill(id);

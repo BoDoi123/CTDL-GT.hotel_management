@@ -1,14 +1,19 @@
 package models;
 
-import java.util.List;
-import java.util.LinkedList;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Setter
 public class Bill {
     private Room room;
     private List<Service> services;
 
     public Bill() {
-        services = new LinkedList<>();
+        services = new ArrayList<>();
     }
 
     public Bill(Room room) {
@@ -16,23 +21,23 @@ public class Bill {
         this.room = room;
     }
 
-    public Room getRoom() {
-        return room;
-    }
-
     public List<Service> getServices() {
-        return services;
-    }
-
-    public void setRoom(Room room) {
-        this.room = room;
+        List<Service> copiedServices = new ArrayList<>();
+        for (Service service : services) {
+            copiedServices.add(new Service(service.getName(), service.getCost()));
+        }
+        return copiedServices;
     }
 
     public void setServices(List<Service> services) {
-        this.services = services;
+        List<Service> copiedServices = new ArrayList<>();
+        for (Service service : services) {
+            copiedServices.add(new Service(service.getName(), service.getCost()));
+        }
+        this.services = copiedServices;
     }
 
-    public void appendService(Service service) {
-        this.services.add(service);
+    public void addService(Service service) {
+        this.services.add(new Service(service.getName(), service.getCost())); // DeepCopy cho Service
     }
 }

@@ -1,100 +1,44 @@
 package models;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.sql.Date;
 
+@Getter
+@Setter
 public class Room {
-    private String id;
-    private Customer renter;
+    private int id;
+    private int renterID;
     private boolean isRented;
     private Date renDate;
     private Date orderDate;
-    private Customer orderCustomer;
     private int price;
-    private Bill bill;
+    private int billID;
 
-    public Room() {
-        System.out.println("models.Room.<init>()");
-        this.bill = new Bill(this);
-    }
-
-    public Room(String id, Customer renter, boolean isRented, Date renDate, Date orderDate, int price, Bill bill) {
-        this();
+    public Room(int id, int renterID, Date renDate, Date orderDate, int price, int billID) {
         this.id = id;
-        this.renter = renter;
-        this.isRented = isRented;
-        this.renDate = renDate;
-        this.orderDate = orderDate;
+        this.renterID = renterID;
+        this.isRented = false;
+        this.renDate = new Date(renDate.getTime());
+        this.orderDate = new Date(orderDate.getTime());
         this.price = price;
-        this.bill = bill;
-    }
-
-    public Room(String id, int price) {
-        this();
-        this.id = id;
-        this.price = price;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public Customer getRenter() {
-        return renter;
-    }
-
-    public boolean isRented() {
-        return isRented;
+        this.billID = billID;
     }
 
     public Date getRenDate() {
-        return renDate;
-    }
-
-    public Date getOrderDate() {
-        return orderDate;
-    }
-
-    public Customer getOrderCustomer() {
-        return orderCustomer;
-    }
-
-    public int getPrice() {
-        return price;
-    }
-
-    public Bill getBill() {
-        return bill;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setRenter(Customer renter) {
-        this.renter = renter;
-    }
-
-    public void setRented(boolean rented) {
-        isRented = rented;
+        return new Date(renDate.getTime());
     }
 
     public void setRenDate(Date renDate) {
-        this.renDate = renDate;
+        this.renDate = new Date(renDate.getTime());
+    }
+
+    public Date getOrderDate() {
+        return new Date(orderDate.getTime());
     }
 
     public void setOrderDate(Date orderDate) {
-        this.orderDate = orderDate;
-    }
-
-    public void setOrderCustomer(Customer orderCustomer) {
-        this.orderCustomer = orderCustomer;
-    }
-
-    public void setPrice(int price) {
-        this.price = price;
-    }
-
-    public void setBill(Bill bill) {
-        this.bill = bill;
+        this.orderDate = new Date(orderDate.getTime());
     }
 }
