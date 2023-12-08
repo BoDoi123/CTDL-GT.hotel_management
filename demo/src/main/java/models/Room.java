@@ -46,16 +46,6 @@ public class Room {
         this.orderDate = new Date(orderDate.getTime());
     }
 
-    public int getPrice() {
-        if (services.isEmpty()) {
-            return 0;
-        }
-        for (Service service : services) {
-            this.price += service.getCost();
-        }
-        return this.price;
-    }
-
     public void setPrice(List<Service> services) {
         this.services = services;
         int result = 0;
@@ -72,9 +62,11 @@ public class Room {
 
     public void addService(Service service) {
         this.services.add(service);
+        this.price += service.getCost();
     }
 
     public void removeService(Service service) {
         this.services.remove(service);
+        this.price -= service.getCost();
     }
 }

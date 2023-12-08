@@ -31,7 +31,6 @@ public class Bill {
 
     public void setServices(List<Service> services) {
         this.services = new LinkedList<>(services);
-        room.setServices(services);
         room.setPrice(services);
         this.price = room.getPrice();
     }
