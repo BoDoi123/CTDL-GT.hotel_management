@@ -19,15 +19,15 @@ public class Room {
     private int billID;
     private List<Service> services;
 
-    public Room(int id, int renterID, Date renDate, Date orderDate, int price, int billID, List<Service> services) {
+    public Room(int id, int renterID, Date renDate, Date orderDate, int billID) {
         this.id = id;
         this.renterID = renterID;
         this.isRented = false;
         this.renDate = new Date(renDate.getTime());
-        this.orderDate = new Date(orderDate.getTime()); 
-        this.price = price;
+        this.orderDate = new Date(orderDate.getTime());
+        this.price = 0;
         this.billID = billID;
-        this.services = new LinkedList<>(services);
+        this.services = new LinkedList<>();
     }
 
     public Date getRenDate() {
@@ -44,6 +44,26 @@ public class Room {
 
     public void setOrderDate(Date orderDate) {
         this.orderDate = new Date(orderDate.getTime());
+    }
+
+    public int getPrice() {
+        if (services.isEmpty()) {
+            return 0;
+        }
+        for (Service service : services) {
+            this.price += service.getCost();
+        }
+        return this.price;
+    }
+
+    public void setPrice(List<Service> services) {
+        this.services = services;
+        int result = 0;
+
+        for (Service service : services) {
+            result += service.getCost();
+        }
+        this.price = result;
     }
 
     public List<Service> getServices() {

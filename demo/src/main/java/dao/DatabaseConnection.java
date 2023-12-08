@@ -21,14 +21,4 @@ public class DatabaseConnection {
             throw new RuntimeException("Khong the ket noi den co so du lieu.");
         }
     }
-
-    public static void closeConnection(Connection connection) {
-        if (connection != null) {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                LOGGER.log(Level.WARNING, "Error closing the database connection", e);
-            }
-        }
-    }
 }
