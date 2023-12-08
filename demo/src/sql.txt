@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS Room (
     orderDate DATE,
     price INTEGER NOT NULL,
     billID INTEGER,
-    FOREIGN KEY (renterID) REFERENCES Customer(id),
+    FOREIGN KEY (renterID) REFERENCES Customer(id)
 );
 
 CREATE TABLE IF NOT EXISTS RoomService (
