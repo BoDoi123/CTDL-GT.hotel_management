@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.sql.Date;
+import java.util.List;
+import java.util.LinkedList;
 
 @Getter
 @Setter
@@ -15,15 +17,17 @@ public class Room {
     private Date orderDate;
     private int price;
     private int billID;
+    private List<Service> services;
 
-    public Room(int id, int renterID, Date renDate, Date orderDate, int price, int billID) {
+    public Room(int id, int renterID, Date renDate, Date orderDate, int price, int billID, List<Service> services) {
         this.id = id;
         this.renterID = renterID;
         this.isRented = false;
         this.renDate = new Date(renDate.getTime());
-        this.orderDate = new Date(orderDate.getTime());
+        this.orderDate = new Date(orderDate.getTime()); 
         this.price = price;
         this.billID = billID;
+        this.services = new LinkedList<>(services);
     }
 
     public Date getRenDate() {
@@ -40,5 +44,17 @@ public class Room {
 
     public void setOrderDate(Date orderDate) {
         this.orderDate = new Date(orderDate.getTime());
+    }
+
+    public List<Service> getServices() {
+        return new LinkedList<>(services);
+    }
+
+    public void addService(Service service) {
+        this.services.add(service);
+    }
+
+    public void removeService(Service service) {
+        this.services.remove(service);
     }
 }

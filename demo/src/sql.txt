@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS User (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(50) NOT NULL,
-    role ENUM('Manager', 'Staff', 'Customer')
+    role ENUM('Manager', 'Staff', 'Customer') NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS Customer (
@@ -41,20 +41,34 @@ CREATE TABLE IF NOT EXISTS Room (
     isRented BOOLEAN,
     renDate DATE,
     orderDate DATE,
-    orderCustomer_id INTEGER,
     price INTEGER NOT NULL,
     billID INTEGER,
     FOREIGN KEY (renterID) REFERENCES Customer(id),
-    FOREIGN KEY (orderCustomer_id) REFERENCES Customer(id)
 );
+
+CREATE TABLE IF NOT EXISTS RoomService (
+    roomID INTEGER,
+    serviceName VARCHAR(255),
+    PRIMARY KEY (roomID, serviceName),
+    FOREIGN KEY (roomID) REFERENCES Room(id),
+    FOREIGN KEY (serviceName) REFERENCES Service(name)
+);
+
 
 CREATE TABLE IF NOT EXISTS Bill (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
     roomID INTEGER,
+    FOREIGN KEY (roomID) REFERENCES Room(id)
+);
+
+CREATE TABLE IF NOT EXISTS BillService (
+    billID INTEGER,
     serviceName VARCHAR(255),
-    FOREIGN KEY (roomID) REFERENCES Room(id),
+    PRIMARY KEY (billID, serviceName),
+    FOREIGN KEY (billID) REFERENCES Bill(id),
     FOREIGN KEY (serviceName) REFERENCES Service(name)
 );
+
 
 ALTER TABLE Room
 ADD CONSTRAINT fk_room_bill FOREIGN KEY (billID) REFERENCES Bill(id);
