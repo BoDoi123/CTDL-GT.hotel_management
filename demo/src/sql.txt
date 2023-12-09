@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS User (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(50) NOT NULL,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
     role ENUM('Manager', 'Staff', 'Customer') NOT NULL
 );
 
