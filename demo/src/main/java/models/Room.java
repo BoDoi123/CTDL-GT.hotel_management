@@ -45,7 +45,7 @@ public class Room {
 
         try {
             Date rentDate = new Date(dateFormat.parse(rentDateStr).getTime());
-            Date depatureDate = new Date(dateFormat.parse(departureDateStr).getTime());
+            Date departureDate = new Date(dateFormat.parse(departureDateStr).getTime());
 
             if (departureDate.after(rentDate)) {
                 room.services = services;

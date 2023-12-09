@@ -7,6 +7,7 @@ import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -25,11 +26,12 @@ public class SimplePriceCalculator implements PriceCalculator {
 
 
             if (departureDate.before(rentDate)) {
-                throw new IllegalArgumentException("departureDate must be after renDate");
+                LOGGER.log(Level.SEVERE, "departureDate must be after rentDate");
+                throw new IllegalArgumentException("departureDate must be after rentDate");
             }
 
             // Tính số ngày thuê
-            this.numberOfDays = TimeUnit.DAYS.convert(departureDate.getTime() - rentDate.getTime(), TimeUnit.MICROSECONDS);
+            this.numberOfDays = TimeUnit.DAYS.convert(departureDate.getTime() - rentDate.getTime(), TimeUnit.MILLISECONDS);
         } catch (ParseException e) {
             LOGGER.log(Level.SEVERE, "Error parsing date", e);
         }
