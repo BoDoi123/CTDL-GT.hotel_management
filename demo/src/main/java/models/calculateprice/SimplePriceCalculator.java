@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class SimplePriceCalculator implements PriceCalculator {
-    private long numberOfDays; // Số ngày đặt phòng
+    private final long numberOfDays; // Số ngày đặt phòng
 
     public SimplePriceCalculator(Date renDate, Date departureDate) {
         if (departureDate.before(renDate)) {
