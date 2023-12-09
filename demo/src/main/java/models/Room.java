@@ -18,23 +18,38 @@ public class Room {
     private int renterID;
     private boolean isRented;
     private Date renDate;
-    private Date orderDate;
+    private Date departureDate;
     private int price;
     private int billID;
     private List<Service> services;
 
-    private PriceCalculator priceCalculator = new SimplePriceCalculator();
+    private PriceCalculator priceCalculator;
 
-    public Room(int renterID, Date renDate, Date orderDate, Bill bill) {
-        this.bill = bill;
+    public Room() {
         this.id = getNextId();
-        this.renterID = renterID;
-        this.isRented = false;
-        this.renDate = new Date(renDate.getTime());
-        this.orderDate = new Date(orderDate.getTime());
         this.price = 0;
-        this.billID = bill.getId();
         this.services = new LinkedList<>();
+        this.isRented = false;
+    }
+
+    public void rentRoom(Room room, Customer customer, Date renDate, Date departureDate, List<Service> services) {
+        if (departureDate.after(renDate)) {
+            room.services = services;
+            room.renterID = customer.getId();
+            room.isRented = true;
+
+            room.renDate = new Date(renDate.getTime());
+            customer.setRentDate(renDate);
+            room.departureDate = new Date(departureDate.getTime());
+
+            priceCalculator = new SimplePriceCalculator(renDate, departureDate);
+            room.price = priceCalculator.calculatePrice(services);
+
+            this.bill = new Bill(room);
+            this.billID = bill.getId();
+        } else {
+            throw new IllegalArgumentException("departureDate must be after renDate");
+        }
     }
 
     private static int getNextId() {
@@ -49,12 +64,12 @@ public class Room {
         this.renDate = new Date(renDate.getTime());
     }
 
-    public Date getOrderDate() {
-        return new Date(orderDate.getTime());
+    public Date getDepartureDate() {
+        return new Date(departureDate.getTime());
     }
 
-    public void setOrderDate(Date orderDate) {
-        this.orderDate = new Date(orderDate.getTime());
+    public void setDepartureDate(Date departureDate) {
+        this.departureDate = new Date(departureDate.getTime());
     }
 
     public void setPrice(List<Service> services) {

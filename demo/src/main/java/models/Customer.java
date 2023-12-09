@@ -22,7 +22,7 @@ public class Customer {
         Male, Female, Other
     }
 
-    public Customer(int userID, String name, Gender gender, Date birthday, String identification, String hometown, Date rentDate) {
+    public Customer(int userID, String name, Gender gender, Date birthday, String identification, String hometown) {
         this.id = getNextId();
         this.userID = userID;
         this.name = name;
@@ -30,7 +30,6 @@ public class Customer {
         this.birthday = new Date(birthday.getTime());
         this.identification = identification;
         this.hometown = hometown;
-        this.rentDate = new Date(rentDate.getTime());
     }
 
     private static int getNextId() {

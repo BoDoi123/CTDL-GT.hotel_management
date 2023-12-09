@@ -11,22 +11,19 @@ import java.util.List;
 public class Bill {
     private static int nextId = 1;
     private int id;
-    private Room room;
     private int roomID;
     private List<Service> services;
     private int price;
 
     public Bill() {
         this.id = getNextId();
-        services = new LinkedList<>();
     }
 
     public Bill(Room room) {
         this();
-        this.room = room;
         this.roomID = room.getId();
         this.services = room.getServices();
-        this.price = room.getPriceCalculator().calculatePrice(services);
+        this.price = room.getPrice();
     }
 
     public List<Service> getServices() {
