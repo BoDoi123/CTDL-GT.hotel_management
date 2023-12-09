@@ -8,6 +8,7 @@ import java.sql.Date;
 @Getter
 @Setter
 public class Employee {
+    private static int nextId = 1;
     private int id;
     private int userID;
     private String name;
@@ -26,8 +27,8 @@ public class Employee {
         Manager, Staff
     }
 
-    public Employee(int id, int userID, String name, String hometown, String identification, Date birthday, Gender gender, Position position, int salary) {
-        this.id = id;
+    public Employee(int userID, String name, String hometown, String identification, Date birthday, Gender gender, Position position, int salary) {
+        this.id = getNextId();
         this.userID = userID;
         this.name = name;
         this.hometown = hometown;
@@ -36,6 +37,10 @@ public class Employee {
         this.gender = gender;
         this.position = position;
         this.salary = salary;
+    }
+
+    private static int getNextId() {
+        return nextId++;
     }
 
     public Date getBirthday() {

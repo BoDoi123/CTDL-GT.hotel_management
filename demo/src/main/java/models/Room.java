@@ -2,6 +2,8 @@ package models;
 
 import lombok.Getter;
 import lombok.Setter;
+import models.calculateprice.PriceCalculator;
+import models.calculateprice.SimplePriceCalculator;
 
 import java.sql.Date;
 import java.util.List;
@@ -10,6 +12,8 @@ import java.util.LinkedList;
 @Getter
 @Setter
 public class Room {
+    private static int nextId = 1;
+    private Bill bill;
     private int id;
     private int renterID;
     private boolean isRented;
@@ -19,15 +23,22 @@ public class Room {
     private int billID;
     private List<Service> services;
 
-    public Room(int id, int renterID, Date renDate, Date orderDate, int billID) {
-        this.id = id;
+    private PriceCalculator priceCalculator = new SimplePriceCalculator();
+
+    public Room(int renterID, Date renDate, Date orderDate, Bill bill) {
+        this.bill = bill;
+        this.id = getNextId();
         this.renterID = renterID;
         this.isRented = false;
         this.renDate = new Date(renDate.getTime());
         this.orderDate = new Date(orderDate.getTime());
         this.price = 0;
-        this.billID = billID;
+        this.billID = bill.getId();
         this.services = new LinkedList<>();
+    }
+
+    private static int getNextId() {
+        return nextId++;
     }
 
     public Date getRenDate() {
@@ -48,12 +59,8 @@ public class Room {
 
     public void setPrice(List<Service> services) {
         this.services = services;
-        int result = 0;
-
-        for (Service service : services) {
-            result += service.getCost();
-        }
-        this.price = result;
+        price = priceCalculator.calculatePrice(services);
+        bill.setPrice(price);
     }
 
     public List<Service> getServices() {
@@ -62,11 +69,11 @@ public class Room {
 
     public void addService(Service service) {
         this.services.add(service);
-        this.price += service.getCost();
+        setPrice(services);
     }
 
     public void removeService(Service service) {
         this.services.remove(service);
-        this.price -= service.getCost();
+        setPrice(services);
     }
 }

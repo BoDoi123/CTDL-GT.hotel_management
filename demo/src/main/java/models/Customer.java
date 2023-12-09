@@ -8,6 +8,7 @@ import java.sql.Date;
 @Getter
 @Setter
 public class Customer {
+    private static int nextId = 1;
     private int id;
     private int userID;
     private String name;
@@ -21,8 +22,8 @@ public class Customer {
         Male, Female, Other
     }
 
-    public Customer(int id, int userID, String name, Gender gender, Date birthday, String identification, String hometown, Date rentDate) {
-        this.id = id;
+    public Customer(int userID, String name, Gender gender, Date birthday, String identification, String hometown, Date rentDate) {
+        this.id = getNextId();
         this.userID = userID;
         this.name = name;
         this.gender = gender;
@@ -30,6 +31,10 @@ public class Customer {
         this.identification = identification;
         this.hometown = hometown;
         this.rentDate = new Date(rentDate.getTime());
+    }
+
+    private static int getNextId() {
+        return nextId++;
     }
 
     public Date getBirthday() {

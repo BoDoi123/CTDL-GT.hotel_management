@@ -6,6 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class User {
+    private static int nextId = 1;
     private int id;
     private String username;
     private String password;
@@ -15,10 +16,14 @@ public class User {
         Manager, Staff, Customer
     }
 
-    public User(int id, String username, String password, Role role) {
-        this.id = id;
+    public User(String username, String password, Role role) {
+        this.id = getNextId();
         this.username = username;
         this.password = password;
         this.role = role;
+    }
+
+    private static int getNextId() {
+        return nextId++;
     }
 }
