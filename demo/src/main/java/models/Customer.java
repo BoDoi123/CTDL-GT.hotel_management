@@ -5,6 +5,12 @@ import lombok.Setter;
 
 import java.sql.Date;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 @Getter
 @Setter
 public class Customer {
@@ -18,18 +24,26 @@ public class Customer {
     private String hometown;
     private Date rentDate;
 
+    private static final Logger LOGGER = Logger.getLogger(Customer.class.getName());
+
     public enum Gender {
         Male, Female, Other
     }
 
-    public Customer(int userID, String name, Gender gender, Date birthday, String identification, String hometown) {
+    public Customer(int userID, String name, Gender gender, String birthdayStr, String identification, String hometown) {
         this.id = getNextId();
         this.userID = userID;
         this.name = name;
         this.gender = gender;
-        this.birthday = new Date(birthday.getTime());
         this.identification = identification;
         this.hometown = hometown;
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        try {
+            this.birthday = new Date(dateFormat.parse(birthdayStr).getTime());
+        } catch (ParseException e) {
+            LOGGER.log(Level.SEVERE, "Error parsing date", e);
+        }
     }
 
     private static int getNextId() {
@@ -40,8 +54,13 @@ public class Customer {
         return new Date(birthday.getTime());
     }
 
-    public void setBirthday(Date birthday) {
-        this.birthday = new Date(birthday.getTime());
+    public void setBirthday(String birthdayStr) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        try {
+            this.birthday = new Date(dateFormat.parse(birthdayStr).getTime());
+        } catch (ParseException e) {
+            LOGGER.log(Level.SEVERE, "Error parsing date", e);
+        }
     }
 
     public Date getRentDate() {

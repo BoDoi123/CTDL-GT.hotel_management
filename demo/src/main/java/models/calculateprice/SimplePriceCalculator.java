@@ -3,20 +3,38 @@ package models.calculateprice;
 import models.Service;
 
 import java.sql.Date;
+
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
+
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SimplePriceCalculator implements PriceCalculator {
-    private final long numberOfDays; // Số ngày đặt phòng
+    private long numberOfDays; // Số ngày đặt phòng
+    private static final Logger LOGGER = Logger.getLogger(SimplePriceCalculator.class.getName());
 
-    public SimplePriceCalculator(Date renDate, Date departureDate) {
-        if (departureDate.before(renDate)) {
-            throw new IllegalArgumentException("departureDate must be after renDate");
+    public SimplePriceCalculator(String rentDateStr, String departureDateStr) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+        try {
+            Date rentDate = new Date(dateFormat.parse(rentDateStr).getTime());
+            Date departureDate = new Date(dateFormat.parse(departureDateStr).getTime());
+
+
+            if (departureDate.before(rentDate)) {
+                throw new IllegalArgumentException("departureDate must be after renDate");
+            }
+
+            // Tính số ngày thuê
+            this.numberOfDays = TimeUnit.DAYS.convert(departureDate.getTime() - rentDate.getTime(), TimeUnit.MICROSECONDS);
+        } catch (ParseException e) {
+            LOGGER.log(Level.SEVERE, "Error parsing date", e);
         }
-
-        // Tính số ngày thuê
-        this.numberOfDays = TimeUnit.DAYS.convert(departureDate.getTime() - renDate.getTime(), TimeUnit.MICROSECONDS);
     }
+
     @Override
     public int calculatePrice(List<Service> services) {
         int totalPrice = 0;
@@ -25,6 +43,6 @@ public class SimplePriceCalculator implements PriceCalculator {
             totalPrice += service.getCost();
         }
 
-        return totalPrice * (int)numberOfDays;
+        return totalPrice * (int) numberOfDays;
     }
 }
