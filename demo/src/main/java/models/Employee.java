@@ -15,7 +15,6 @@ import java.util.logging.Logger;
 @Setter
 public class Employee {
     private static int nextId = 1;
-    private User user;
     private int id;
     private int userID;
     private String name;
@@ -32,8 +31,8 @@ public class Employee {
         Male, Female, Other
     }
 
-    public enum Position {
-        Manager, Staff
+    public Employee() {
+
     }
 
     public Employee(User user, String name, String hometown, String identification, String birthdayStr, Gender gender, int salary) {
@@ -45,7 +44,6 @@ public class Employee {
             LOGGER.log(Level.SEVERE, "Error to create Employee from User account");
         }
 
-        this.user = user;
         this.id = getNextId();
         this.userID = user.getId();
         this.name = name;

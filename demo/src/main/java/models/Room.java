@@ -74,11 +74,11 @@ public class Room {
         return nextId++;
     }
 
-    public Date getRenDate() {
+    public Date getRentDate() {
         return new Date(rentDate.getTime());
     }
 
-    public void setRenDate(String rentDateStr) {
+    public void setRentDate(String rentDateStr) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
         try {

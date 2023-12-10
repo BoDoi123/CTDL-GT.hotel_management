@@ -30,6 +30,10 @@ public class Customer {
         Male, Female, Other
     }
 
+    public Customer() {
+
+    }
+
     public Customer(User user, String name, Gender gender, String birthdayStr, String identification, String hometown) {
         if (user.getRole().equals(User.Role.Customer)) {
             this.id = getNextId();

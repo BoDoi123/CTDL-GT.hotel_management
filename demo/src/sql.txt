@@ -62,14 +62,6 @@ CREATE TABLE IF NOT EXISTS Bill (
     FOREIGN KEY (roomID) REFERENCES Room(id)
 );
 
-CREATE TABLE IF NOT EXISTS BillService (
-    billID INTEGER,
-    serviceName VARCHAR(255),
-    PRIMARY KEY (billID, serviceName),
-    FOREIGN KEY (billID) REFERENCES Bill(id),
-    FOREIGN KEY (serviceName) REFERENCES Service(name)
-);
-
 
 ALTER TABLE Room
 ADD CONSTRAINT fk_room_bill FOREIGN KEY (billID) REFERENCES Bill(id);

@@ -16,6 +16,10 @@ public class User {
         Manager, Staff, Customer
     }
 
+    public User() {
+
+    }
+
     public User(String username, String password, Role role) {
         this.id = getNextId();
         this.username = username;
