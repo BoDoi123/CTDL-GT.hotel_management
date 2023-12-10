@@ -63,6 +63,7 @@ public class Employee {
 
     public void setBirthday(String birthdayStr) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
         try {
             this.birthday = new Date(dateFormat.parse(birthdayStr).getTime());
         } catch (ParseException e) {
