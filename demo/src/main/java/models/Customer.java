@@ -30,19 +30,23 @@ public class Customer {
         Male, Female, Other
     }
 
-    public Customer(int userID, String name, Gender gender, String birthdayStr, String identification, String hometown) {
-        this.id = getNextId();
-        this.userID = userID;
-        this.name = name;
-        this.gender = gender;
-        this.identification = identification;
-        this.hometown = hometown;
+    public Customer(User user, String name, Gender gender, String birthdayStr, String identification, String hometown) {
+        if (user.getRole().equals(User.Role.Customer)) {
+            this.id = getNextId();
+            this.userID = user.getId();
+            this.name = name;
+            this.gender = gender;
+            this.identification = identification;
+            this.hometown = hometown;
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        try {
-            this.birthday = new Date(dateFormat.parse(birthdayStr).getTime());
-        } catch (ParseException e) {
-            LOGGER.log(Level.SEVERE, "Error parsing date", e);
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            try {
+                this.birthday = new Date(dateFormat.parse(birthdayStr).getTime());
+            } catch (ParseException e) {
+                LOGGER.log(Level.SEVERE, "Error parsing date", e);
+            }
+        } else {
+            LOGGER.log(Level.SEVERE, "Error to create Customer from User account");
         }
     }
 

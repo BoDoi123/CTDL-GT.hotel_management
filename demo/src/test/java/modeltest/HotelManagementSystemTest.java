@@ -25,16 +25,17 @@ public class HotelManagementSystemTest {
     @Test
     public void testEmployeeCreation() {
         // Kiểm tra khởi tạo nhân viên
-        Employee employee = new Employee(1, "Lam", "HaNoi",
+        User user = new User("Bodoi", "password", User.Role.Staff);
+        Employee employee = new Employee(user, "Lam", "HaNoi",
                 "12345", "01/02/2002",
-                Employee.Gender.Male, Employee.Position.Manager, 5000);
+                Employee.Gender.Male, 5000);
 
-        assertEquals(1, employee.getUserID());
+        assertEquals(user.getId(), employee.getUserID());
         assertEquals("Lam", employee.getName());
         assertEquals("HaNoi", employee.getHometown());
         assertEquals("12345", employee.getIdentification());
         assertEquals(Employee.Gender.Male, employee.getGender());
-        assertEquals(Employee.Position.Manager, employee.getPosition());
+        assertEquals(user.getRole(), employee.getPosition());
         assertEquals(5000, employee.getSalary());
 
         assertEquals("01/02/2002", new SimpleDateFormat("dd/MM/yyyy").format(employee.getBirthday()));
@@ -43,10 +44,11 @@ public class HotelManagementSystemTest {
     @Test
     public void testCustomerCreation() {
         // Kiểm tra khởi tạo khách hàng
-        Customer customer = new Customer(2, "Linh", Customer.Gender.Female,
+        User user = new User("Bodoi2", "password", User.Role.Customer);
+        Customer customer = new Customer(user, "Linh", Customer.Gender.Female,
                 "01/02/2002", "67890", "HaNoi");
 
-        assertEquals(2, customer.getUserID());
+        assertEquals(user.getId(), customer.getUserID());
         assertEquals("Linh", customer.getName());
         assertEquals(Customer.Gender.Female, customer.getGender());
         assertEquals("67890", customer.getIdentification());
@@ -88,7 +90,8 @@ public class HotelManagementSystemTest {
         Room room = new Room();
 
         // Tao 1 khách hàng
-        Customer customer = new Customer(3, "Lam", Customer.Gender.Male, "02/05/2002", "12345678", "HaNoi");
+        User user = new User("Khachhang", "password", User.Role.Customer);
+        Customer customer = new Customer(user, "Lam", Customer.Gender.Male, "02/05/2002", "12345678", "HaNoi");
 
         // Ngày thuê và ngày trả phòng dự kiến
         String rentDateStr = "10/12/2023";

@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 @Setter
 public class Employee {
     private static int nextId = 1;
+    private User user;
     private int id;
     private int userID;
     private String name;
@@ -22,7 +23,7 @@ public class Employee {
     private String identification;
     private Date birthday;
     private Gender gender;
-    private Position position;
+    private User.Role position;
     private int salary;
 
     private static final Logger LOGGER = Logger.getLogger(Employee.class.getName());
@@ -35,14 +36,22 @@ public class Employee {
         Manager, Staff
     }
 
-    public Employee(int userID, String name, String hometown, String identification, String birthdayStr, Gender gender, Position position, int salary) {
+    public Employee(User user, String name, String hometown, String identification, String birthdayStr, Gender gender, int salary) {
+        if (user.getRole().equals(User.Role.Staff)) {
+            this.position = User.Role.Staff;
+        } else if (user.getRole().equals(User.Role.Manager)) {
+            this.position = User.Role.Manager;
+        } else {
+            LOGGER.log(Level.SEVERE, "Error to create Employee from User account");
+        }
+
+        this.user = user;
         this.id = getNextId();
-        this.userID = userID;
+        this.userID = user.getId();
         this.name = name;
         this.hometown = hometown;
         this.identification = identification;
         this.gender = gender;
-        this.position = position;
         this.salary = salary;
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
