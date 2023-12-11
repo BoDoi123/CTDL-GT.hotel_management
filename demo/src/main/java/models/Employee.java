@@ -4,13 +4,14 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Getter
 @Setter
 public class Employee {
-    private static int nextId = 1;
+    private static AtomicInteger nextID = new AtomicInteger(1);
     private User user;
     private int id;
     private int userID;
@@ -42,7 +43,7 @@ public class Employee {
             throw new IllegalArgumentException("Role don't match with position");
         }
         this.user = user;
-        this.id = getNextId();
+        this.id = nextID.getAndIncrement();
         this.userID = user.getId();
         this.name = name;
         this.hometown = hometown;
@@ -50,10 +51,6 @@ public class Employee {
         this.gender = gender;
         this.salary = salary;
         this.birthday = birthday;
-    }
-
-    private static int getNextId() {
-        return nextId++;
     }
 
     public void setRole(User.Role role) {

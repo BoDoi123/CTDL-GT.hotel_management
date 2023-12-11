@@ -3,10 +3,12 @@ package models;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 @Getter
 @Setter
 public class User {
-    private static int nextId = 1;
+    private static AtomicInteger nextID = new AtomicInteger(1);
     private int id;
     private String username;
     private String password;
@@ -21,13 +23,9 @@ public class User {
     }
 
     public User(String username, String password, Role role) {
-        this.id = getNextId();
+        this.id = nextID.getAndIncrement();
         this.username = username;
         this.password = password;
         this.role = role;
-    }
-
-    private static int getNextId() {
-        return nextId++;
     }
 }

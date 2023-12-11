@@ -8,13 +8,14 @@ import models.calculateprice.SimplePriceCalculator;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Getter
 @Setter
 public class Room {
-    private static int nextId = 1;
+    private static AtomicInteger nextID = new AtomicInteger(1);
     private Bill bill;
     private int id;
     private int renterID;
@@ -30,7 +31,7 @@ public class Room {
     private static final Logger LOGGER = Logger.getLogger(Room.class.getName());
 
     public Room() {
-        this.id = getNextId();
+        this.id = nextID.getAndIncrement();
         this.price = 0;
         this.services = new LinkedList<>();
         this.isRented = false;
@@ -59,10 +60,6 @@ public class Room {
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error processing dates", e);
         }
-    }
-
-    private static int getNextId() {
-        return nextId++;
     }
 
     public void setPrice(List<Service> services) {
