@@ -5,11 +5,7 @@ import lombok.Setter;
 import models.calculateprice.PriceCalculator;
 import models.calculateprice.SimplePriceCalculator;
 
-import java.sql.Date;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-
+import java.time.LocalDate;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.logging.Level;
@@ -23,8 +19,8 @@ public class Room {
     private int id;
     private int renterID;
     private boolean isRented;
-    private Date rentDate;
-    private Date departureDate;
+    private LocalDate rentDate;
+    private LocalDate departureDate;
     private int price;
     private int billID;
     private List<Service> services;
@@ -40,23 +36,18 @@ public class Room {
         this.isRented = false;
     }
 
-    public void rentRoom(Room room, Customer customer, String rentDateStr, String departureDateStr, List<Service> services) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-
+    public void rentRoom(Room room, Customer customer, LocalDate rentDate, LocalDate departureDate, List<Service> services) {
         try {
-            Date rentDate = new Date(dateFormat.parse(rentDateStr).getTime());
-            Date departureDate = new Date(dateFormat.parse(departureDateStr).getTime());
-
-            if (departureDate.after(rentDate)) {
+            if (departureDate.isAfter(rentDate)) {
                 room.services = services;
                 room.renterID = customer.getId();
                 room.isRented = true;
 
-                room.rentDate = new Date(rentDate.getTime());
+                room.rentDate = rentDate;
                 customer.setRentDate(rentDate);
-                room.departureDate = new Date(departureDate.getTime());
+                room.departureDate = departureDate;
 
-                priceCalculator = new SimplePriceCalculator(rentDateStr, departureDateStr);
+                priceCalculator = new SimplePriceCalculator(rentDate, departureDate);
                 room.price = priceCalculator.calculatePrice(services);
 
                 this.bill = new Bill(room);
@@ -65,41 +56,13 @@ public class Room {
                 LOGGER.log(Level.SEVERE, "departureDate must be after rentDate");
                 throw new IllegalArgumentException("departureDate must be after renDate");
             }
-        } catch (ParseException e) {
-            LOGGER.log(Level.SEVERE, "Error parsing date", e);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error processing dates", e);
         }
     }
 
     private static int getNextId() {
         return nextId++;
-    }
-
-    public Date getRentDate() {
-        return new Date(rentDate.getTime());
-    }
-
-    public void setRentDate(String rentDateStr) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-
-        try {
-            this.rentDate = new Date(dateFormat.parse(rentDateStr).getTime());
-        } catch (ParseException e) {
-            LOGGER.log(Level.SEVERE, "Error parsing date", e);
-        }
-    }
-
-    public Date getDepartureDate() {
-        return new Date(departureDate.getTime());
-    }
-
-    public void setDepartureDate(String departureDateStr) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-
-        try {
-            this.departureDate = new Date(dateFormat.parse(departureDateStr).getTime());
-        } catch (ParseException e) {
-            LOGGER.log(Level.SEVERE, "Error parsing date", e);
-        }
     }
 
     public void setPrice(List<Service> services) {

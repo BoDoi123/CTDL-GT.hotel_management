@@ -6,7 +6,7 @@ import models.calculateprice.SimplePriceCalculator;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -27,7 +27,7 @@ public class HotelManagementSystemTest {
         // Kiểm tra khởi tạo nhân viên
         User user = new User("Bodoi", "password", User.Role.Staff);
         Employee employee = new Employee(user, "Lam", "HaNoi",
-                "12345", "01/02/2002",
+                "12345", LocalDate.of(2002, 2, 1),
                 Employee.Gender.Male, 5000);
 
         assertEquals(user.getId(), employee.getUserID());
@@ -38,7 +38,7 @@ public class HotelManagementSystemTest {
         assertEquals(user.getRole(), employee.getPosition());
         assertEquals(5000, employee.getSalary());
 
-        assertEquals("01/02/2002", new SimpleDateFormat("dd/MM/yyyy").format(employee.getBirthday()));
+        assertEquals(LocalDate.of(2002, 2, 1), employee.getBirthday());
     }
 
     @Test
@@ -46,7 +46,7 @@ public class HotelManagementSystemTest {
         // Kiểm tra khởi tạo khách hàng
         User user = new User("Bodoi2", "password", User.Role.Customer);
         Customer customer = new Customer(user, "Linh", Customer.Gender.Female,
-                "01/02/2002", "67890", "HaNoi");
+                LocalDate.of(2002, 2, 1), "67890", "HaNoi");
 
         assertEquals(user.getId(), customer.getUserID());
         assertEquals("Linh", customer.getName());
@@ -54,7 +54,7 @@ public class HotelManagementSystemTest {
         assertEquals("67890", customer.getIdentification());
         assertEquals("HaNoi", customer.getHometown());
 
-        assertEquals("01/02/2002", new SimpleDateFormat("dd/MM/yyyy").format(customer.getBirthday()));
+        assertEquals(LocalDate.of(2002, 2, 1), customer.getBirthday());
     }
 
     @Test
@@ -69,11 +69,11 @@ public class HotelManagementSystemTest {
     @Test
     public void testSimplePriceCalculator() {
         // Ngày thuê và ngày trả phòng dự kiến
-        String rentDateStr = "10/12/2023";
-        String departureDateStr = "12/12/2023";
+        LocalDate rentDate = LocalDate.of(2023, 12, 11);
+        LocalDate departureDate = LocalDate.of(2023, 12, 13);
 
         // Kiểm tra tính toán giá phòng dự kiến
-        SimplePriceCalculator calculator = new SimplePriceCalculator(rentDateStr, departureDateStr);
+        SimplePriceCalculator calculator = new SimplePriceCalculator(rentDate, departureDate);
 
         List<Service> services = new LinkedList<>();
         services.add(new Service("Wifi", 10));
@@ -91,11 +91,12 @@ public class HotelManagementSystemTest {
 
         // Tao 1 khách hàng
         User user = new User("Khachhang", "password", User.Role.Customer);
-        Customer customer = new Customer(user, "Lam", Customer.Gender.Male, "02/05/2002", "12345678", "HaNoi");
+        Customer customer = new Customer(user, "Lam", Customer.Gender.Male,
+                LocalDate.of(2002, 5, 2), "12345678", "HaNoi");
 
         // Ngày thuê và ngày trả phòng dự kiến
-        String rentDateStr = "10/12/2023";
-        String departureDateStr = "14/12/2023";
+        LocalDate rentDate = LocalDate.of(2023, 12, 11);
+        LocalDate departureDate = LocalDate.of(2023, 12, 14);
 
         // Danh sách dịch vụ
         List<Service> services = new LinkedList<>();
@@ -103,7 +104,7 @@ public class HotelManagementSystemTest {
         services.add(new Service("Breakfast", 20));
 
         // Thực hiện thuê phòng
-        room.rentRoom(room, customer, rentDateStr, departureDateStr, services);
+        room.rentRoom(room, customer, rentDate, departureDate, services);
 
         // Kiểm tra trạng thái phòng
         assertTrue(room.isRented());
@@ -113,7 +114,7 @@ public class HotelManagementSystemTest {
         assertNotNull(room.getBill());
 
         // Kiểm tra giá phòng
-        int expectedPrice = new SimplePriceCalculator(rentDateStr, departureDateStr).calculatePrice(services);
+        int expectedPrice = new SimplePriceCalculator(rentDate, departureDate).calculatePrice(services);
         assertEquals(expectedPrice, room.getPrice());
     }
 }
