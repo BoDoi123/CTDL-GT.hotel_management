@@ -74,16 +74,6 @@ public class UserDAOTest {
     }
 
     @Test
-    public void testGetIDByUsername() {
-        // Phương thức kiểm thử lấy ID theo tên người dùng
-        User sampleUser = createTestUser();
-        userDAO.addUser(sampleUser);
-
-        int userId = userDAO.getIDByUsername("sampleUser");
-        assertTrue(userId != -1, "User ID should be retrieved successfully");
-    }
-
-    @Test
     public void testAuthenticateUser() {
         // Phương thức kiểm thử xác thực người dùng
         User sampleUser = createTestUser();
@@ -94,6 +84,15 @@ public class UserDAOTest {
         assertFalse(userDAO.authenticateUser("nonExistentUser", "password"), "Authentication should fail");
     }
 
+    @Test
+    public void testGetIDByUsername() {
+        // Phương thức kiểm thử lấy ID theo tên người dùng
+        User sampleUser = createTestUser();
+        userDAO.addUser(sampleUser);
+
+        int userId = userDAO.getIDByUsername("sampleUser");
+        assertTrue(userId != -1, "User ID should be retrieved successfully");
+    }
 
     @Test
     public void testGetUserByID() {

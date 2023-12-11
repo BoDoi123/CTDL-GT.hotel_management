@@ -95,9 +95,8 @@ public class EmployeeDAO {
 
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     if (resultSet.next()) {
-                        Employee employee = mapResultSetToEmployee(resultSet);
-                        LOGGER.log(Level.FINE, "Employee retrieved: {0}" + employee.getName());
-                        return employee;
+                        LOGGER.log(Level.FINE, "Employee retrieved: {0}" + mapResultSetToEmployee(resultSet).getName());
+                        return mapResultSetToEmployee(resultSet);
                     }
                 }
             }
@@ -108,7 +107,7 @@ public class EmployeeDAO {
         return null;
     }
 
-    public List<Employee> getAllEmployeeRoleStaff() {
+    public List<Employee> getAllEmployeesRoleStaff() {
         List<Employee> employees = new LinkedList<>();
 
         try (Connection connection = DatabaseConnection.getConnection()) {
@@ -130,7 +129,7 @@ public class EmployeeDAO {
         return employees;
     }
 
-    public List<Employee> getAllEmployee() {
+    public List<Employee> getAllEmployees() {
         List<Employee> employees = new LinkedList<>();
 
         try (Connection connection = DatabaseConnection.getConnection()) {

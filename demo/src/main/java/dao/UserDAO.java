@@ -98,9 +98,8 @@ public class UserDAO {
 
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     if (resultSet != null && resultSet.next()) {
-                        int id = resultSet.getInt("id");
-                        LOGGER.log(Level.FINE, "ID retrieved: {0}", id);
-                        return id;
+                        LOGGER.log(Level.FINE, "ID retrieved: {0}", resultSet.getInt("id"));
+                        return resultSet.getInt("id");
                     }
                 }
             }
@@ -120,9 +119,8 @@ public class UserDAO {
 
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     if (resultSet != null && resultSet.next()) {
-                        User user = mapResultSetToUser(resultSet);
-                        LOGGER.log(Level.FINE, "User Retrieved: {0}", user.getUsername());
-                        return user;
+                        LOGGER.log(Level.FINE, "User Retrieved: {0}", mapResultSetToUser(resultSet).getUsername());
+                        return mapResultSetToUser(resultSet);
                     }
                 }
             }
@@ -142,9 +140,8 @@ public class UserDAO {
 
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     if (resultSet != null && resultSet.next()) {
-                        User user = mapResultSetToUser(resultSet);
-                        LOGGER.log(Level.FINE, "User Retrieved: {0}", user.getUsername());
-                        return user;
+                        LOGGER.log(Level.FINE, "User Retrieved: {0}", mapResultSetToUser(resultSet).getUsername());
+                        return mapResultSetToUser(resultSet);
                     }
                 }
             }
@@ -164,9 +161,8 @@ public class UserDAO {
 
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     if (resultSet != null && resultSet.next()) {
-                        User.Role role = User.Role.valueOf(resultSet.getString("role"));
-                        LOGGER.log(Level.FINE, "User Role Retrieved: {0}", role.name());
-                        return role;
+                        LOGGER.log(Level.FINE, "User Role Retrieved: {0}", User.Role.valueOf(resultSet.getString("role")).name());
+                        return User.Role.valueOf(resultSet.getString("role"));
                     }
                 }
             }

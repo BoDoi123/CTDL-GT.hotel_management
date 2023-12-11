@@ -25,7 +25,7 @@ public class Customer {
     private static final Logger LOGGER = Logger.getLogger(Customer.class.getName());
 
     public enum Gender {
-        Male, Female, Other
+        Male, Female
     }
 
     public Customer() {

@@ -38,7 +38,7 @@ public class EmployeeDAOTest {
 
     private void cleanUpTestData() {
         // Xóa dữ liệu sau mỗi lần kiểm thử
-        List<Employee> employees = employeeDAO.getAllEmployee();
+        List<Employee> employees = employeeDAO.getAllEmployees();
         for (Employee employee : employees) {
             employeeDAO.deleteEmployee(employee.getId());
         }
@@ -50,30 +50,22 @@ public class EmployeeDAOTest {
     }
 
     @Test
-    void testEmployeeCreation() {
+    void testAddEmployee() {
         // Khởi tạo nhân viên
-        User staff = new User("staff1", "password", User.Role.Staff);
-        userDAO.addUser(staff);
-
-        Employee employee = new Employee(staff, "Staff1", "City", "1234567", LocalDate.of(2000, 11, 20), Employee.Gender.Male, 2000);
-        employeeDAO.addEmployee(employee);
+        Employee employee = createTestEmployee();
 
         // Truy vấn và kiểm thử
         Employee retrieveEmployee = employeeDAO.getEmployeeByID(employee.getId());
         assertNotNull(retrieveEmployee);
-        assertEquals(employee.getName(), retrieveEmployee.getName());
+        assertEquals(employee.getName(), retrieveEmployee.getName(), "Employee should be added successfully");
     }
 
     @Test
-    void testEmployeeUpdate() {
+    void testUpdateEmployee() {
         // Khởi tạo nhân viên
-        User staff = new User("staff1", "password", User.Role.Staff);
-        userDAO.addUser(staff);
+        Employee employee = createTestEmployee();
 
-        Employee employee = new Employee(staff, "Staff1", "City", "1234567", LocalDate.of(2000, 11, 20), Employee.Gender.Male, 2000);
-        employeeDAO.addEmployee(employee);
-
-        // Update
+        // Cập nhật thông tin nhân viên
         Employee retrieveEmployee = employeeDAO.getEmployeeByID(employee.getId());
         assertNotNull(retrieveEmployee);
         retrieveEmployee.setName("UpdateName");
@@ -82,29 +74,47 @@ public class EmployeeDAOTest {
         // Kiểm thử Update
         retrieveEmployee = employeeDAO.getEmployeeByID(employee.getId());
         assertNotNull(retrieveEmployee);
-        assertEquals("UpdateName", retrieveEmployee.getName());
+        assertEquals("UpdateName", retrieveEmployee.getName(), "Employee should be updated");
     }
 
     @Test
-    void testEmployeeDeletion() {
+    void testDeleteEmployee() {
         // Khởi tạo nhân viên
-        User staff = new User("staff1", "password", User.Role.Staff);
-        userDAO.addUser(staff);
+        Employee employee = createTestEmployee();
 
-        Employee employee = new Employee(staff, "Staff1", "City", "1234567", LocalDate.of(2000, 11, 20), Employee.Gender.Male, 2000);
-        employeeDAO.addEmployee(employee);
-
-        // Delete
+        // Xóa nhân viên
         employeeDAO.deleteEmployee(employee.getId());
 
         // Kiểm thử Delete
         Employee retrieveEmployee = employeeDAO.getEmployeeByID(employee.getId());
-        assertNull(retrieveEmployee);
+        assertNull(retrieveEmployee, "Employee should be deleted");
     }
 
     @Test
     void testGetAllEmployeeRoleStaff() {
+        // Khởi tạo nhóm nhân viên
+        createTestGroupEmployee();
+
+        // Truy vấn
+        List<Employee> staffList = employeeDAO.getAllEmployeesRoleStaff();
+
+        // Kiểm thử
+        assertEquals(2, staffList.size());
+    }
+
+    private Employee createTestEmployee() {
         // Khởi tạo nhân viên
+        User staff = new User("staff", "password", User.Role.Staff);
+        userDAO.addUser(staff);
+
+        Employee employee = new Employee(staff, "Staff", "City", "1234567", LocalDate.of(2000, 11, 20), Employee.Gender.Male, 2000);
+        employeeDAO.addEmployee(employee);
+
+        return employee;
+    }
+
+    private void createTestGroupEmployee() {
+        // Khởi tạo nhóm nhân viên
         User staff1 = new User("staff1", "password", User.Role.Staff);
         User staff2 = new User("staff2", "password", User.Role.Staff);
         User manager = new User("manager", "password", User.Role.Manager);
@@ -118,11 +128,5 @@ public class EmployeeDAOTest {
         employeeDAO.addEmployee(employee1);
         employeeDAO.addEmployee(employee2);
         employeeDAO.addEmployee(employee3);
-
-        // Truy vấn
-        List<Employee> staffList = employeeDAO.getAllEmployeeRoleStaff();
-
-        // Kiểm thử
-        assertEquals(2, staffList.size());
     }
 }

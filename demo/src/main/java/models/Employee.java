@@ -26,7 +26,7 @@ public class Employee {
     private static final Logger LOGGER = Logger.getLogger(Employee.class.getName());
 
     public enum Gender {
-        Male, Female, Other
+        Male, Female
     }
 
     public Employee() {
