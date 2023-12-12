@@ -1,4 +1,4 @@
-package daotest;
+package dao_test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -50,7 +50,6 @@ public class CustomerDAOTest {
 
     @Test
     public void testAddCustomer() {
-        // Khởi tạo khách hàng
         Customer customer = createTestCustomer();
 
         // Truy vẫn và kiểm thử
@@ -60,7 +59,6 @@ public class CustomerDAOTest {
 
     @Test
     public void testUpdateCustomer() {
-        // Khởi tạo khách hàng
         Customer customer = createTestCustomer();
 
         // Thay đổi thông tin khách hàng
@@ -84,7 +82,6 @@ public class CustomerDAOTest {
 
     @Test
     public void testDeleteCustomer() {
-        // Khởi tạo khách hàng
         Customer customer = createTestCustomer();
 
         // Xóa khách hàng
@@ -97,7 +94,6 @@ public class CustomerDAOTest {
 
     @Test
     public void testGetCustomerByID() {
-        // Khởi tạo khách hàng
         Customer customer = createTestCustomer();
 
         // Kiểm thử
@@ -107,7 +103,6 @@ public class CustomerDAOTest {
 
     @Test
     public void testGetAllCustomers() {
-        // Khởi tạo nhóm khách hàng
         createTestGroupCustomer();
 
         // Truy vấn
@@ -129,6 +124,7 @@ public class CustomerDAOTest {
     }
 
     private void createTestGroupCustomer() {
+        // Khởi tạo danh sách khách hàng
         User user1 = new User("customer1", "password", User.Role.Customer);
         User user2 = new User("customer2", "password", User.Role.Customer);
         User user3 = new User("customer3", "password", User.Role.Customer);

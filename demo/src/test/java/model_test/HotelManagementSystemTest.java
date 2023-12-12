@@ -1,4 +1,4 @@
-package modeltest;
+package model_test;
 
 import models.*;
 import models.calculateprice.SimplePriceCalculator;

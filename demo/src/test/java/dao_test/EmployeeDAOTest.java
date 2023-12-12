@@ -1,4 +1,4 @@
-package daotest;
+package dao_test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -51,7 +51,6 @@ public class EmployeeDAOTest {
 
     @Test
     void testAddEmployee() {
-        // Khởi tạo nhân viên
         Employee employee = createTestEmployee();
 
         // Truy vấn và kiểm thử
@@ -62,7 +61,6 @@ public class EmployeeDAOTest {
 
     @Test
     void testUpdateEmployee() {
-        // Khởi tạo nhân viên
         Employee employee = createTestEmployee();
 
         // Cập nhật thông tin nhân viên
@@ -79,7 +77,6 @@ public class EmployeeDAOTest {
 
     @Test
     void testDeleteEmployee() {
-        // Khởi tạo nhân viên
         Employee employee = createTestEmployee();
 
         // Xóa nhân viên
@@ -92,7 +89,6 @@ public class EmployeeDAOTest {
 
     @Test
     void testGetAllEmployeeRoleStaff() {
-        // Khởi tạo nhóm nhân viên
         createTestGroupEmployee();
 
         // Truy vấn
