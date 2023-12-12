@@ -105,6 +105,10 @@ public class HotelManagementSystemTest {
 
         // Thực hiện thuê phòng
         room.rentRoom(room, customer, rentDate, departureDate, services);
+        customer.rentRoom(room);
+
+        // Kiểm tra khách hàng
+        assertEquals(customer.getRoomID(), room.getId());
 
         // Kiểm tra trạng thái phòng
         assertTrue(room.isRented());

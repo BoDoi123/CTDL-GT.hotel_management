@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS user (
 CREATE TABLE IF NOT EXISTS customer (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
     user_id INTEGER,
+    room_id INTEGER,
     name VARCHAR(255) NOT NULL,
     gender ENUM('Male', 'Female', 'Other') DEFAULT 'Other',
     birthday DATE NOT NULL,
@@ -63,5 +64,7 @@ CREATE TABLE IF NOT EXISTS bill (
 );
 
 
-ALTER TABLE Room
+ALTER TABLE room
 ADD CONSTRAINT fk_room_bill FOREIGN KEY (bill_id) REFERENCES bill(id);
+ALTER TABLE customer
+ADD CONSTRAINT fk_customer_room FOREIGN KEY (room_id) REFERENCES room(id);

@@ -13,7 +13,9 @@ import java.util.logging.Logger;
 public class Customer {
     private static AtomicInteger nextID = new AtomicInteger(1);
     private User user;
+    private Room room;
     private int id;
+    private int roomID;
     private int userID;
     private String name;
     private Gender gender;
@@ -35,6 +37,7 @@ public class Customer {
     public Customer(User user, String name, Gender gender, LocalDate birthday, String identification, String hometown) {
         if (user.getRole().equals(User.Role.Customer)) {
             this.user = user;
+            room = null;
             this.id = nextID.getAndIncrement();
             this.userID = user.getId();
             this.name = name;
@@ -46,5 +49,10 @@ public class Customer {
             LOGGER.log(Level.SEVERE, "Error to create Customer from User account");
             throw new IllegalArgumentException("Role don't match with position");
         }
+    }
+
+    public void rentRoom(Room room) {
+        this.room = room;
+        this.roomID = room.getId();
     }
 }

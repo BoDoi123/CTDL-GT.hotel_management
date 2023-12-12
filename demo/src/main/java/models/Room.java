@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 public class Room {
     private static AtomicInteger nextID = new AtomicInteger(1);
     private Bill bill;
+    private Customer customer;
     private int id;
     private int renterID;
     private boolean isRented;
@@ -40,6 +41,7 @@ public class Room {
     public void rentRoom(Room room, Customer customer, LocalDate rentDate, LocalDate departureDate, List<Service> services) {
         try {
             if (departureDate.isAfter(rentDate)) {
+                room.customer = customer;
                 room.services = services;
                 room.renterID = customer.getId();
                 room.isRented = true;

@@ -68,22 +68,6 @@ public class CustomerDAO {
         }
     }
 
-    public void updateRentDate(int customerID, LocalDate rentDate) {
-        try (Connection connection = DatabaseConnection.getConnection()) {
-            String query = "UPDATE customer SET rent_date = ? WHERE id = ?";
-
-            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                preparedStatement.setDate(1, Date.valueOf(rentDate));
-                preparedStatement.setInt(2, customerID);
-
-                preparedStatement.executeUpdate();
-                LOGGER.log(Level.FINE, "Rent date updated for customer with ID: {0}", customerID);
-            }
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error updating rent date for customer in database", e);
-        }
-    }
-
     public void deleteCustomer(int customerID) {
         try (Connection connection = DatabaseConnection.getConnection()) {
             String query = "DELETE FROM customer WHERE id = ?";
@@ -142,7 +126,6 @@ public class CustomerDAO {
 
         return customers;
     }
-
 
     private Customer mapResultSetToCustomer(ResultSet resultSet) throws SQLException {
         int id = resultSet.getInt("id");
