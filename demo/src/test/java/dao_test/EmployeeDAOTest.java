@@ -23,7 +23,7 @@ public class EmployeeDAOTest {
     void setUp() {
         // Khởi tạo đối tượng EmployeeDAO và UserDAO
         userDAO = new UserDAO();
-        employeeDAO = new EmployeeDAO(userDAO);
+        employeeDAO = new EmployeeDAO();
     }
 
     @AfterEach

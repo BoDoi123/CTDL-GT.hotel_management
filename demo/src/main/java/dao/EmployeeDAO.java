@@ -23,11 +23,7 @@ import java.util.LinkedList;
 @Setter
 public class EmployeeDAO {
     private static final Logger LOGGER = Logger.getLogger(EmployeeDAO.class.getName());
-    private UserDAO userDAO;
-
-    public EmployeeDAO(UserDAO userDAO) {
-        this.userDAO = userDAO;
-    }
+    private UserDAO userDAO = new UserDAO();
 
     // Thao tac co ban
     public void addEmployee(Employee employee) {

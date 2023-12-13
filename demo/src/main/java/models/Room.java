@@ -74,11 +74,12 @@ public class Room {
         billID = 0;
         bill = null;
         price = 0;
-        getCustomer().checkOutRoom(this);
+        getCustomer().checkOutRoom();
     }
 
     public void setPrice(List<Service> services) {
         this.services = services;
+        priceCalculator = new SimplePriceCalculator(this.rentDate, this.departureDate);
         price = priceCalculator.calculatePrice(services);
         bill.setPrice(price);
     }
@@ -95,5 +96,12 @@ public class Room {
     public void removeService(Service service) {
         this.services.remove(service);
         setPrice(services);
+    }
+
+    public void updateDepartureDate(LocalDate departureDate) {
+        this.departureDate = departureDate;
+        priceCalculator = new SimplePriceCalculator(this.rentDate, this.departureDate);
+        this.price = priceCalculator.calculatePrice(services);
+        bill.setPrice(this.price);
     }
 }

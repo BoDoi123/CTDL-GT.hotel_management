@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS customer (
     birthday DATE NOT NULL,
     identification VARCHAR(20) NOT NULL UNIQUE,
     hometown VARCHAR(255) NOT NULL,
-    rent_date DATE,
+    rent_date DATE
 );
 
 CREATE TABLE IF NOT EXISTS employee (
@@ -52,7 +52,6 @@ CREATE TABLE IF NOT EXISTS room_service (
     FOREIGN KEY (room_id) REFERENCES room(id),
     FOREIGN KEY (service_name) REFERENCES service(name)
 );
-
 
 CREATE TABLE IF NOT EXISTS bill (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,

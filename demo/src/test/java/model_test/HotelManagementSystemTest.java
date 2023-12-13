@@ -92,8 +92,8 @@ public class HotelManagementSystemTest {
                 LocalDate.of(2002, 5, 2), "12345678", "HaNoi");
 
         // Ngày thuê và ngày trả phòng dự kiến
-        LocalDate rentDate = LocalDate.of(2023, 12, 11);
-        LocalDate departureDate = LocalDate.of(2023, 12, 14);
+        LocalDate rentDate = LocalDate.now();
+        LocalDate departureDate = LocalDate.of(2023, 12, 16);
 
         // Danh sách dịch vụ
         List<Service> services = new LinkedList<>();
@@ -117,20 +117,45 @@ public class HotelManagementSystemTest {
         // Kiểm tra giá phòng
         int expectedPrice = new SimplePriceCalculator(rentDate, departureDate).calculatePrice(services);
         assertEquals(expectedPrice, room.getPrice());
+
+        // Kiểm tra thêm và xóa dịch vụ
+        // Thêm dịch vụ
+        Service service = new Service("Lunch", 30);
+        room.addService(service);
+
+        assertEquals(3, room.getServices().size());
+
+        expectedPrice = new SimplePriceCalculator(rentDate, departureDate).calculatePrice(services);
+        assertEquals(expectedPrice, room.getPrice());
+
+        // Xóa dịch vụ
+        room.removeService(services.get(0));
+
+        assertEquals(2, room.getServices().size());
+
+        expectedPrice = new SimplePriceCalculator(rentDate, departureDate).calculatePrice(services);
+        assertEquals(expectedPrice, room.getPrice());
+
+        // Kiểm tra gia hạn ngày thuê
+        LocalDate newDepartureDate = LocalDate.of(2023, 12, 18);
+        room.updateDepartureDate(newDepartureDate);
+
+        expectedPrice = new SimplePriceCalculator(rentDate, newDepartureDate).calculatePrice(services);
+        assertEquals(expectedPrice, room.getPrice());
         
         // Thực hiện trả phòng
         room.checkOut();
 
         // Kiểm tra khách hàng
         assertNull(customer.getRentDate());
-        assertEquals(customer.getRoomID(), 0);
+        assertEquals(0, customer.getRoomID());
 
         // Kiểm tra trạng thái phòng
         assertFalse(room.isRented());
         assertNull(room.getDepartureDate());
         assertNull(room.getRentDate());
         assertNull(room.getBill());
-        assertEquals(room.getRenterID(), 0);
-        assertEquals(room.getPrice(), 0);
+        assertEquals(0, room.getRenterID());
+        assertEquals(0, room.getPrice());
     }
 }

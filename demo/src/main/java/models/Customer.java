@@ -5,8 +5,6 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Getter
 @Setter
@@ -21,8 +19,6 @@ public class Customer {
     private String identification;
     private String hometown;
     private LocalDate rentDate;
-
-    private static final Logger LOGGER = Logger.getLogger(Customer.class.getName());
 
     public enum Gender {
         Male, Female
@@ -47,7 +43,7 @@ public class Customer {
         this.roomID = room.getId();
     }
 
-    public void checkOutRoom(Room room) {
+    public void checkOutRoom() {
         roomID = 0;
         rentDate = null;
     }

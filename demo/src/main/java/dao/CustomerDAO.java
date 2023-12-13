@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import models.Customer;
+import models.Room;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -148,5 +149,39 @@ public class CustomerDAO {
         customer.setRoomID(roomID);
         customer.setRentDate(rentDate);
         return customer;
+    }
+
+    public void customerRentRoom(Room room) {
+        try (Connection connection = DatabaseConnection.getConnection()) {
+            String query = "UPDATE customer SET room_id = ?, rent_date = ? WHERE id = ?";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setInt(1, room.getId());
+                preparedStatement.setDate(2, Date.valueOf(room.getRentDate()));
+                preparedStatement.setInt(3, room.getCustomer().getId());
+
+                preparedStatement.executeUpdate();
+                LOGGER.log(Level.FINE, "customer updated: {0}", room.getCustomer().getId());
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error updating customer in database", e);
+        }
+    }
+
+    public void customerCheckOut(Room room) {
+        try (Connection connection = DatabaseConnection.getConnection()) {
+            String query = "UPDATE customer SET room_id = ?, rent_date = ? WHERE id = ?";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setInt(1, 0);
+                preparedStatement.setDate(2, Date.valueOf(room.getRentDate()));
+                preparedStatement.setInt(3, room.getCustomer().getId());
+
+                preparedStatement.executeUpdate();
+                LOGGER.log(Level.FINE, "Customer checked out room: {0}", room.getId());
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error Customer checked out room", e);
+        }
     }
 }
