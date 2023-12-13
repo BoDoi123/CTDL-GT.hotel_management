@@ -95,6 +95,7 @@ public class ServiceDAOTest {
         assertEquals(retrievedService.getCost(), service.getCost());
     }
 
+    @Test
     public void testGetAllServices() {
         createTestGroupServices();
 

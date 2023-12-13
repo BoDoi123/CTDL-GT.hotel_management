@@ -38,22 +38,23 @@ public class Room {
         this.isRented = false;
     }
 
-    public void rentRoom(Room room, Customer customer, LocalDate rentDate, LocalDate departureDate, List<Service> services) {
+    public void rentRoom(Customer customer, LocalDate rentDate, LocalDate departureDate, List<Service> services) {
         try {
             if (departureDate.isAfter(rentDate)) {
-                room.customer = customer;
-                room.services = services;
-                room.renterID = customer.getId();
-                room.isRented = true;
+                this.customer = customer;
+                this.services = services;
+                renterID = customer.getId();
+                isRented = true;
 
-                room.rentDate = rentDate;
+                this.rentDate = rentDate;
                 customer.setRentDate(rentDate);
-                room.departureDate = departureDate;
+                customer.rentRoom(this);
+                this.departureDate = departureDate;
 
                 priceCalculator = new SimplePriceCalculator(rentDate, departureDate);
-                room.price = priceCalculator.calculatePrice(services);
+                price = priceCalculator.calculatePrice(services);
 
-                this.bill = new Bill(room);
+                this.bill = new Bill(this);
                 this.billID = bill.getId();
             } else {
                 LOGGER.log(Level.SEVERE, "departureDate must be after rentDate");
@@ -62,6 +63,18 @@ public class Room {
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error processing dates", e);
         }
+    }
+
+    public void checkOut() {
+        isRented = false;
+        services = new LinkedList<>();
+        rentDate = null;
+        departureDate = null;
+        renterID = 0;
+        billID = 0;
+        bill = null;
+        price = 0;
+        getCustomer().checkOutRoom(this);
     }
 
     public void setPrice(List<Service> services) {

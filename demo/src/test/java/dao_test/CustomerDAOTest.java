@@ -15,14 +15,12 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class CustomerDAOTest {
-    private UserDAO userDAO;
     private CustomerDAO customerDAO;
 
     @BeforeEach
     public void setUp() {
         // Khởi tạo
         customerDAO = new CustomerDAO();
-        userDAO = new UserDAO();
     }
 
     @AfterEach
@@ -32,7 +30,6 @@ public class CustomerDAOTest {
 
         // Hủy tạo đối tượng
         customerDAO = null;
-        userDAO = null;
     }
 
     private void cleanUpTestData() {
@@ -40,11 +37,6 @@ public class CustomerDAOTest {
         List<Customer> customers = customerDAO.getAllCustomers();
         for (Customer customer : customers) {
             customerDAO.deleteCustomer(customer.getId());
-        }
-
-        List<User> users = userDAO.getAllUser();
-        for (User user : users) {
-            userDAO.deleteUserByID(user.getId());
         }
     }
 
@@ -95,10 +87,15 @@ public class CustomerDAOTest {
     @Test
     public void testGetCustomerByID() {
         Customer customer = createTestCustomer();
+        customer.setRentDate(LocalDate.of(23, 12, 13));
+        customerDAO.updateCustomer(customer);
 
         // Kiểm thử
         Customer testCustomer = customerDAO.getCustomerByID(customer.getId());
         assertNotNull(testCustomer, "Customer should be retrieved successfully");
+
+        assertNotNull(testCustomer.getRentDate());
+        assertEquals(testCustomer.getRoomID(), 0);
     }
 
     @Test
@@ -114,10 +111,7 @@ public class CustomerDAOTest {
 
     private Customer createTestCustomer() {
         // Khởi tạo khách hàng
-        User user = new User("customer", "password", User.Role.Customer);
-        userDAO.addUser(user);
-
-        Customer customer = new Customer(user, "TestCustomer", Customer.Gender.Male, LocalDate.now().minusYears(20), "123456", "City");
+        Customer customer = new Customer("TestCustomer", Customer.Gender.Male, LocalDate.now().minusYears(20), "123456", "City");
         customerDAO.addCustomer(customer);
 
         return customer;
@@ -125,17 +119,9 @@ public class CustomerDAOTest {
 
     private void createTestGroupCustomer() {
         // Khởi tạo danh sách khách hàng
-        User user1 = new User("customer1", "password", User.Role.Customer);
-        User user2 = new User("customer2", "password", User.Role.Customer);
-        User user3 = new User("customer3", "password", User.Role.Customer);
-
-        userDAO.addUser(user1);
-        userDAO.addUser(user2);
-        userDAO.addUser(user3);
-
-        Customer customer1 = new Customer(user1, "Customer1", Customer.Gender.Female, LocalDate.now().minusYears(20), "1234567", "City1");
-        Customer customer2 = new Customer(user2, "Customer2", Customer.Gender.Male, LocalDate.now().minusYears(19), "1234568", "City2");
-        Customer customer3 = new Customer(user3, "Customer3", Customer.Gender.Female, LocalDate.now().minusYears(22), "1234569", "City3");
+        Customer customer1 = new Customer("Customer1", Customer.Gender.Female, LocalDate.now().minusYears(20), "1234567", "City1");
+        Customer customer2 = new Customer("Customer2", Customer.Gender.Male, LocalDate.now().minusYears(19), "1234568", "City2");
+        Customer customer3 = new Customer("Customer3", Customer.Gender.Female, LocalDate.now().minusYears(22), "1234569", "City3");
 
         customerDAO.addCustomer(customer1);
         customerDAO.addCustomer(customer2);

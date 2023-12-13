@@ -2,12 +2,11 @@ CREATE TABLE IF NOT EXISTS user (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    role ENUM('Manager', 'Staff', 'Customer') NOT NULL
+    role ENUM('Manager', 'Staff') NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS customer (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    user_id INTEGER,
     room_id INTEGER,
     name VARCHAR(255) NOT NULL,
     gender ENUM('Male', 'Female', 'Other') DEFAULT 'Other',
@@ -15,7 +14,6 @@ CREATE TABLE IF NOT EXISTS customer (
     identification VARCHAR(20) NOT NULL UNIQUE,
     hometown VARCHAR(255) NOT NULL,
     rent_date DATE,
-    FOREIGN KEY (user_id) REFERENCES user(id)
 );
 
 CREATE TABLE IF NOT EXISTS employee (
@@ -39,7 +37,7 @@ CREATE TABLE IF NOT EXISTS service (
 CREATE TABLE IF NOT EXISTS room (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
     renter_id INTEGER,
-    is_rented BOOLEAN,
+    is_rented BOOLEAN DEFAULT FALSE,
     rent_date DATE,
     departure_date DATE,
     price INTEGER NOT NULL DEFAULT 0,

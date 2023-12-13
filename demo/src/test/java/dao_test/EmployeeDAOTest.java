@@ -22,8 +22,8 @@ public class EmployeeDAOTest {
     @BeforeEach
     void setUp() {
         // Khởi tạo đối tượng EmployeeDAO và UserDAO
-        employeeDAO = new EmployeeDAO();
         userDAO = new UserDAO();
+        employeeDAO = new EmployeeDAO(userDAO);
     }
 
     @AfterEach

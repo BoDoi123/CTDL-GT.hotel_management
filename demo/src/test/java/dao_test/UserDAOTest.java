@@ -131,7 +131,7 @@ public class UserDAOTest {
     @Test
     public void testGetAllUser() {
         // Phương thức kiểm thử lấy tất cả user account
-        User user1 = new User("sampleUser1", "password", User.Role.Customer);
+        User user1 = new User("sampleUser1", "password", User.Role.Staff);
         User user2 = new User("sampleUser2", "password", User.Role.Staff);
         User user3 = new User("sampleUser3", "password", User.Role.Manager);
         userDAO.addUser(user1);
@@ -144,6 +144,6 @@ public class UserDAOTest {
     }
 
     private User createTestUser() {
-        return new User("sampleUser", "password", User.Role.Customer);
+        return new User("sampleUser", "password", User.Role.Staff);
     }
 }

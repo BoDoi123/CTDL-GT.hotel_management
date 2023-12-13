@@ -15,7 +15,7 @@ public class User {
     private Role role;
 
     public enum Role {
-        Manager, Staff, Customer
+        Manager, Staff
     }
 
     public User() {

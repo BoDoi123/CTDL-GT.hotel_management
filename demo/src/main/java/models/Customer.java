@@ -12,11 +12,9 @@ import java.util.logging.Logger;
 @Setter
 public class Customer {
     private static AtomicInteger nextID = new AtomicInteger(1);
-    private User user;
     private Room room;
     private int id;
     private int roomID;
-    private int userID;
     private String name;
     private Gender gender;
     private LocalDate birthday;
@@ -34,25 +32,23 @@ public class Customer {
 
     }
 
-    public Customer(User user, String name, Gender gender, LocalDate birthday, String identification, String hometown) {
-        if (user.getRole().equals(User.Role.Customer)) {
-            this.user = user;
-            room = null;
-            this.id = nextID.getAndIncrement();
-            this.userID = user.getId();
-            this.name = name;
-            this.gender = gender;
-            this.birthday = birthday;
-            this.identification = identification;
-            this.hometown = hometown;
-        } else {
-            LOGGER.log(Level.SEVERE, "Error to create Customer from User account");
-            throw new IllegalArgumentException("Role don't match with position");
-        }
+    public Customer(String name, Gender gender, LocalDate birthday, String identification, String hometown) {
+        room = null;
+        this.id = nextID.getAndIncrement();
+        this.name = name;
+        this.gender = gender;
+        this.birthday = birthday;
+        this.identification = identification;
+        this.hometown = hometown;
     }
 
     public void rentRoom(Room room) {
         this.room = room;
         this.roomID = room.getId();
+    }
+
+    public void checkOutRoom(Room room) {
+        roomID = 0;
+        rentDate = null;
     }
 }

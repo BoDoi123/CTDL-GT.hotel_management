@@ -1,7 +1,9 @@
 package dao;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import models.Customer;
-import models.User;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -16,22 +18,22 @@ import java.util.logging.Logger;
 import java.util.List;
 import java.util.LinkedList;
 
-
+@Getter
+@Setter
 public class CustomerDAO {
     private static final Logger LOGGER = Logger.getLogger(CustomerDAO.class.getName());
 
     // Thao tac co ban
     public void addCustomer(Customer customer) {
         try (Connection connection = DatabaseConnection.getConnection()) {
-            String query = "INSERT INTO customer (user_id, name, gender, birthday, identification, hometown) VALUES (?, ?, ?, ?, ?, ?)";
+            String query = "INSERT INTO customer (name, gender, birthday, identification, hometown) VALUES (?, ?, ?, ?, ?)";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-                preparedStatement.setInt(1, customer.getUser().getId());
-                preparedStatement.setString(2, customer.getName());
-                preparedStatement.setString(3, customer.getGender().name());
-                preparedStatement.setDate(4, Date.valueOf(customer.getBirthday()));
-                preparedStatement.setString(5, customer.getIdentification());
-                preparedStatement.setString(6, customer.getHometown());
+                preparedStatement.setString(1, customer.getName());
+                preparedStatement.setString(2, customer.getGender().name());
+                preparedStatement.setDate(3, Date.valueOf(customer.getBirthday()));
+                preparedStatement.setString(4, customer.getIdentification());
+                preparedStatement.setString(5, customer.getHometown());
 
                 preparedStatement.executeUpdate();
 
@@ -129,18 +131,22 @@ public class CustomerDAO {
 
     private Customer mapResultSetToCustomer(ResultSet resultSet) throws SQLException {
         int id = resultSet.getInt("id");
-        int userID = resultSet.getInt("user_id");
+        int roomID = resultSet.getInt("room_id");
         String name = resultSet.getString("name");
         Customer.Gender gender = Customer.Gender.valueOf(resultSet.getString("gender"));
         LocalDate birthday = resultSet.getDate("birthday").toLocalDate();
         String identification = resultSet.getString("identification");
         String hometown = resultSet.getString("hometown");
 
-        User user = new User("", "", User.Role.Customer);
-        user.setId(userID);
+        LocalDate rentDate = null;
+        if (resultSet.getDate("rent_date") != null) {
+            rentDate = resultSet.getDate("rent_date").toLocalDate();
+        }
 
-        Customer customer = new Customer(user, name, gender, birthday, identification, hometown);
+        Customer customer = new Customer(name, gender, birthday, identification, hometown);
         customer.setId(id);
+        customer.setRoomID(roomID);
+        customer.setRentDate(rentDate);
         return customer;
     }
 }

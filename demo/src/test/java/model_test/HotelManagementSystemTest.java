@@ -15,11 +15,11 @@ public class HotelManagementSystemTest {
     @Test
     public void testUserCreation() {
         // Kiểm tra khởi tạo tài khoản
-        User user = new User("Chu_Long", "password123", User.Role.Customer);
+        User user = new User("Chu_Long", "password123", User.Role.Staff);
 
         assertEquals("Chu_Long", user.getUsername());
         assertEquals("password123", user.getPassword());
-        assertEquals(User.Role.Customer, user.getRole());
+        assertEquals(User.Role.Staff, user.getRole());
     }
 
     @Test
@@ -44,11 +44,9 @@ public class HotelManagementSystemTest {
     @Test
     public void testCustomerCreation() {
         // Kiểm tra khởi tạo khách hàng
-        User user = new User("Bodoi2", "password", User.Role.Customer);
-        Customer customer = new Customer(user, "Linh", Customer.Gender.Female,
+        Customer customer = new Customer("Linh", Customer.Gender.Female,
                 LocalDate.of(2002, 2, 1), "67890", "HaNoi");
 
-        assertEquals(user.getId(), customer.getUserID());
         assertEquals("Linh", customer.getName());
         assertEquals(Customer.Gender.Female, customer.getGender());
         assertEquals("67890", customer.getIdentification());
@@ -90,8 +88,7 @@ public class HotelManagementSystemTest {
         Room room = new Room();
 
         // Tao 1 khách hàng
-        User user = new User("Khachhang", "password", User.Role.Customer);
-        Customer customer = new Customer(user, "Lam", Customer.Gender.Male,
+        Customer customer = new Customer("Lam", Customer.Gender.Male,
                 LocalDate.of(2002, 5, 2), "12345678", "HaNoi");
 
         // Ngày thuê và ngày trả phòng dự kiến
@@ -104,11 +101,11 @@ public class HotelManagementSystemTest {
         services.add(new Service("Breakfast", 20));
 
         // Thực hiện thuê phòng
-        room.rentRoom(room, customer, rentDate, departureDate, services);
-        customer.rentRoom(room);
+        room.rentRoom(customer, rentDate, departureDate, services);
 
         // Kiểm tra khách hàng
         assertEquals(customer.getRoomID(), room.getId());
+        assertEquals(customer.getRentDate(), rentDate);
 
         // Kiểm tra trạng thái phòng
         assertTrue(room.isRented());
@@ -120,5 +117,20 @@ public class HotelManagementSystemTest {
         // Kiểm tra giá phòng
         int expectedPrice = new SimplePriceCalculator(rentDate, departureDate).calculatePrice(services);
         assertEquals(expectedPrice, room.getPrice());
+        
+        // Thực hiện trả phòng
+        room.checkOut();
+
+        // Kiểm tra khách hàng
+        assertNull(customer.getRentDate());
+        assertEquals(customer.getRoomID(), 0);
+
+        // Kiểm tra trạng thái phòng
+        assertFalse(room.isRented());
+        assertNull(room.getDepartureDate());
+        assertNull(room.getRentDate());
+        assertNull(room.getBill());
+        assertEquals(room.getRenterID(), 0);
+        assertEquals(room.getPrice(), 0);
     }
 }

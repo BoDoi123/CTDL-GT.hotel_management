@@ -1,5 +1,8 @@
 package dao;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import models.Employee;
 import models.User;
 
@@ -16,8 +19,15 @@ import java.util.logging.Logger;
 import java.util.List;
 import java.util.LinkedList;
 
+@Getter
+@Setter
 public class EmployeeDAO {
     private static final Logger LOGGER = Logger.getLogger(EmployeeDAO.class.getName());
+    private UserDAO userDAO;
+
+    public EmployeeDAO(UserDAO userDAO) {
+        this.userDAO = userDAO;
+    }
 
     // Thao tac co ban
     public void addEmployee(Employee employee) {
@@ -162,8 +172,7 @@ public class EmployeeDAO {
         User.Role position = User.Role.valueOf(resultSet.getString("position"));
         int salary = resultSet.getInt("salary");
 
-        User user = new User("", "", position);
-        user.setId(userID);
+        User user = userDAO.getUserByID(userID);
 
         Employee employee = new Employee(user, name, hometown, identification, birthday, gender, salary);
         employee.setId(id);
