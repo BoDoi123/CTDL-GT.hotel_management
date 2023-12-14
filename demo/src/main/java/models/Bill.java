@@ -13,12 +13,8 @@ public class Bill {
     private int roomID;
     private int price;
 
-    public Bill() {
-        this.id = nextID.getAndIncrement();
-    }
-
     public Bill(Room room) {
-        this();
+        this.id = nextID.getAndIncrement();
         this.roomID = room.getId();
         this.price = room.getPrice();
     }

@@ -57,4 +57,9 @@ public class Employee {
         this.position = role;
         user.setRole(role);
     }
+
+    public void setUser(User user) {
+        this.user = user;
+        setUserID(user.getId());
+    }
 }

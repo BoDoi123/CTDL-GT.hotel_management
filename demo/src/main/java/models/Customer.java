@@ -47,4 +47,9 @@ public class Customer {
         roomID = 0;
         rentDate = null;
     }
+
+    public void setRoom(Room room) {
+        this.room = room;
+        setRoomID(room.getId());
+    }
 }

@@ -2,10 +2,8 @@ package dao_test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import models.Customer;
-import models.User;
-import dao.CustomerDAO;
-import dao.UserDAO;
+import dao.*;
+import models.*;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
