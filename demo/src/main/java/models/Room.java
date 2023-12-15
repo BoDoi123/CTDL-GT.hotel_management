@@ -34,15 +34,14 @@ public class Room {
     public Room() {
         this.id = nextID.getAndIncrement();
         this.price = 0;
-        this.services = new LinkedList<>();
         this.isRented = false;
     }
 
-    public void rentRoom(Customer customer, LocalDate rentDate, LocalDate departureDate, List<Service> services) {
+    public void rentRoom(Customer customer, LocalDate rentDate, LocalDate departureDate) {
         try {
             if (departureDate.isAfter(rentDate)) {
                 this.customer = customer;
-                this.services = services;
+                this.services = new LinkedList<>();
                 renterID = customer.getId();
                 isRented = true;
 
@@ -65,9 +64,9 @@ public class Room {
         }
     }
 
-    public void checkOut() {
+    public void checkout() {
         isRented = false;
-        services = new LinkedList<>();
+        services = null;
         rentDate = null;
         departureDate = null;
         renterID = 0;

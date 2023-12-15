@@ -96,12 +96,13 @@ public class HotelManagementSystemTest {
         LocalDate departureDate = LocalDate.now().plusDays(2);
 
         // Danh sách dịch vụ
-        List<Service> services = new LinkedList<>();
-        services.add(new Service("Wifi", 10));
-        services.add(new Service("Breakfast", 20));
+        Service service1 = new Service("Wifi", 10);
+        Service service2 = new Service("Breakfast", 20);
 
         // Thực hiện thuê phòng
-        room.rentRoom(customer, rentDate, departureDate, services);
+        room.rentRoom(customer, rentDate, departureDate);
+        room.addService(service1);
+        room.addService(service2);
 
         // Kiểm tra khách hàng
         assertEquals(customer.getRoomID(), room.getId());
@@ -115,7 +116,7 @@ public class HotelManagementSystemTest {
         assertNotNull(room.getBill());
 
         // Kiểm tra giá phòng
-        int expectedPrice = new SimplePriceCalculator(rentDate, departureDate).calculatePrice(services);
+        int expectedPrice = new SimplePriceCalculator(rentDate, departureDate).calculatePrice(room.getServices());
         assertEquals(expectedPrice, room.getPrice());
 
         // Kiểm tra thêm và xóa dịch vụ
@@ -125,26 +126,26 @@ public class HotelManagementSystemTest {
 
         assertEquals(3, room.getServices().size());
 
-        expectedPrice = new SimplePriceCalculator(rentDate, departureDate).calculatePrice(services);
+        expectedPrice = new SimplePriceCalculator(rentDate, departureDate).calculatePrice(room.getServices());
         assertEquals(expectedPrice, room.getPrice());
 
         // Xóa dịch vụ
-        room.removeService(services.get(0));
+        room.removeService(room.getServices().get(0));
 
         assertEquals(2, room.getServices().size());
 
-        expectedPrice = new SimplePriceCalculator(rentDate, departureDate).calculatePrice(services);
+        expectedPrice = new SimplePriceCalculator(rentDate, departureDate).calculatePrice(room.getServices());
         assertEquals(expectedPrice, room.getPrice());
 
         // Kiểm tra gia hạn ngày thuê
         LocalDate newDepartureDate = LocalDate.of(2023, 12, 18);
         room.updateDepartureDate(newDepartureDate);
 
-        expectedPrice = new SimplePriceCalculator(rentDate, newDepartureDate).calculatePrice(services);
+        expectedPrice = new SimplePriceCalculator(rentDate, newDepartureDate).calculatePrice(room.getServices());
         assertEquals(expectedPrice, room.getPrice());
         
         // Thực hiện trả phòng
-        room.checkOut();
+        room.checkout();
 
         // Kiểm tra khách hàng
         assertNull(customer.getRentDate());

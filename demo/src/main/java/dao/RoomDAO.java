@@ -51,21 +51,6 @@ public class RoomDAO {
         }
     }
 
-    public void deleteRoom(int roomID) {
-        try (Connection connection = DatabaseConnection.getConnection()) {
-            String query = "DELETE FROM room WHERE id = ?";
-
-            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                preparedStatement.setInt(1, roomID);
-
-                preparedStatement.executeUpdate();
-                LOGGER.log(Level.FINE, "Room deleted: {0}", roomID);
-            }
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error deleting room from database", e);
-        }
-    }
-
     // Thue phong khach san
     public void rentRoom(Room room) {
         try (Connection connection = DatabaseConnection.getConnection()) {
@@ -135,7 +120,7 @@ public class RoomDAO {
     }
 
     // Cập nhật thông tin thuê phòng
-    public void updateRoomRentDate(Room room) {
+    public void updateDepartureDate(Room room) {
         try (Connection connection = DatabaseConnection.getConnection()) {
             String query = "UPDATE room SET departure_date = ?, price = ? WHERE id = ?";
 
@@ -156,7 +141,7 @@ public class RoomDAO {
 
     // Cập nhật dịch vụ
     public void updateRoomServices(Room room) {
-        try (Connection connection = DatabaseConnection.getConnection()) {
+        try  {
             // Xóa các dịch vụ cũ
             deleteRoomServices(room);
 
@@ -165,7 +150,7 @@ public class RoomDAO {
 
             updateBill(room);
             LOGGER.log(Level.FINE, "Room services updated: {0}", room.getId());
-        } catch (SQLException e) {
+        } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error updating room services in database", e);
         }
     }
@@ -194,8 +179,8 @@ public class RoomDAO {
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setInt(1, room.getRenterID());
                 preparedStatement.setBoolean(2, false);
-                preparedStatement.setDate(3, Date.valueOf(room.getRentDate()));
-                preparedStatement.setDate(4, Date.valueOf(room.getDepartureDate()));
+                preparedStatement.setDate(3, null);
+                preparedStatement.setDate(4, null);
                 preparedStatement.setInt(5, room.getPrice());
                 preparedStatement.setInt(6, room.getBillID());
                 preparedStatement.setInt(7, room.getId());
@@ -328,7 +313,7 @@ public class RoomDAO {
         // Khi phòng trống
         if (!isRented) {
             Room room = new Room();
-            room.checkOut();
+            room.checkout();
             room.setId(id);
 
             return room;
@@ -346,7 +331,12 @@ public class RoomDAO {
 
         Room room = new Room();
         room.setId(id);
-        room.rentRoom(customer, rentDate, departureDate, services);
+        room.rentRoom(customer, rentDate, departureDate);
+
+        for (Service service : services) {
+            room.addService(service);
+        }
+
         room.setBillID(billID);
         room.setPrice(services);
 
