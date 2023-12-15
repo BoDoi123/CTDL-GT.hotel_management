@@ -93,7 +93,7 @@ public class HotelManagementSystemTest {
 
         // Ngày thuê và ngày trả phòng dự kiến
         LocalDate rentDate = LocalDate.now();
-        LocalDate departureDate = LocalDate.of(2023, 12, 16);
+        LocalDate departureDate = LocalDate.now().plusDays(2);
 
         // Danh sách dịch vụ
         List<Service> services = new LinkedList<>();

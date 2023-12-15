@@ -135,9 +135,9 @@ public class RoomDAO {
     }
 
     // Cập nhật thông tin thuê phòng
-    public void updateRoom(Room room) {
+    public void updateRoomRentDate(Room room) {
         try (Connection connection = DatabaseConnection.getConnection()) {
-            String query = "UPDATE room departure_date = ?, price = ? WHERE id = ?";
+            String query = "UPDATE room SET departure_date = ?, price = ? WHERE id = ?";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setDate(1, Date.valueOf(room.getDepartureDate()));
@@ -150,7 +150,23 @@ public class RoomDAO {
                 LOGGER.log(Level.FINE, "Room updated: {0}", room.getId());
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error updating room to database", e);
+            LOGGER.log(Level.SEVERE, "Error updating room in database", e);
+        }
+    }
+
+    // Cập nhật dịch vụ
+    public void updateRoomServices(Room room) {
+        try (Connection connection = DatabaseConnection.getConnection()) {
+            // Xóa các dịch vụ cũ
+            deleteRoomServices(room);
+
+            // Thêm các dịch vụ mói vào phòng
+            addRoomService(room);
+
+            updateBill(room);
+            LOGGER.log(Level.FINE, "Room services updated: {0}", room.getId());
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error updating room services in database", e);
         }
     }
 
@@ -193,6 +209,21 @@ public class RoomDAO {
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error checked room in database", e);
+        }
+    }
+
+    private void deleteRoomServices(Room room) {
+        try (Connection connection = DatabaseConnection.getConnection()) {
+            String query = "DELETE FROM room_service WHERE room_id = ?";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setInt(1, room.getId());
+
+                preparedStatement.executeUpdate();
+                LOGGER.log(Level.FINE, "Room Services deleted: {0}", room.getServices().size());
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error deleting room services in database", e);
         }
     }
 
@@ -245,21 +276,6 @@ public class RoomDAO {
         Bill bill = new Bill(room);
         bill.setId(id);
         return bill;
-    }
-
-    private void deleteRoomServices(Room room) {
-        try (Connection connection = DatabaseConnection.getConnection()) {
-            String query = "DELETE FROM room_service WHERE room_id = ?";
-
-            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                preparedStatement.setInt(1, room.getId());
-
-                preparedStatement.executeUpdate();
-                LOGGER.log(Level.FINE, "Room Services deleted: {0}", room.getServices().size());
-            }
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error deleting room services in database", e);
-        }
     }
 
     // Truy vấn
