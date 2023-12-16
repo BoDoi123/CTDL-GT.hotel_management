@@ -104,20 +104,24 @@ public class HotelManagementSystemTest {
         room.addService(service1);
         room.addService(service2);
 
+        // Lấy thông tin hóa đơn
+        Bill bill = room.getBill();
+
         // Kiểm tra khách hàng
-        assertEquals(customer.getRoomID(), room.getId());
         assertEquals(customer.getRentDate(), rentDate);
+        assertEquals(customer.getId(), bill.getRenterID());
 
         // Kiểm tra trạng thái phòng
         assertTrue(room.isRented());
         assertEquals(customer.getId(), room.getRenterID());
         assertNotNull(room.getRentDate());
         assertNotNull(room.getDepartureDate());
-        assertNotNull(room.getBill());
+        assertNotNull(bill);
 
         // Kiểm tra giá phòng
         int expectedPrice = new SimplePriceCalculator(rentDate, departureDate).calculatePrice(room.getServices());
         assertEquals(expectedPrice, room.getPrice());
+        assertEquals(bill.getPrice(), room.getPrice());
 
         // Kiểm tra thêm và xóa dịch vụ
         // Thêm dịch vụ
@@ -149,7 +153,6 @@ public class HotelManagementSystemTest {
 
         // Kiểm tra khách hàng
         assertNull(customer.getRentDate());
-        assertEquals(0, customer.getRoomID());
 
         // Kiểm tra trạng thái phòng
         assertFalse(room.isRented());
@@ -158,5 +161,6 @@ public class HotelManagementSystemTest {
         assertNull(room.getBill());
         assertEquals(0, room.getRenterID());
         assertEquals(0, room.getPrice());
+        assertEquals(bill.getRenterID(), customer.getId());
     }
 }

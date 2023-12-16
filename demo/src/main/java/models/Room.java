@@ -38,29 +38,32 @@ public class Room {
     }
 
     public void rentRoom(Customer customer, LocalDate rentDate, LocalDate departureDate) {
-        try {
-            if (departureDate.isAfter(rentDate)) {
-                this.customer = customer;
-                this.services = new LinkedList<>();
-                renterID = customer.getId();
-                isRented = true;
+        if (!isRented) {
+            try {
+                if (departureDate.isAfter(rentDate)) {
+                    this.customer = customer;
+                    this.services = new LinkedList<>();
+                    renterID = customer.getId();
+                    isRented = true;
 
-                this.rentDate = rentDate;
-                customer.setRentDate(rentDate);
-                customer.rentRoom(this);
-                this.departureDate = departureDate;
+                    this.rentDate = rentDate;
+                    customer.setRentDate(rentDate);
+                    this.departureDate = departureDate;
 
-                priceCalculator = new SimplePriceCalculator(rentDate, departureDate);
-                price = priceCalculator.calculatePrice(services);
+                    priceCalculator = new SimplePriceCalculator(rentDate, departureDate);
+                    price = priceCalculator.calculatePrice(services);
 
-                this.bill = new Bill(this);
-                this.billID = bill.getId();
-            } else {
-                LOGGER.log(Level.SEVERE, "departureDate must be after rentDate");
-                throw new IllegalArgumentException("departureDate must be after renDate");
+                    this.bill = new Bill(this);
+                    this.billID = bill.getId();
+                } else {
+                    LOGGER.log(Level.SEVERE, "departureDate must be after rentDate");
+                    throw new IllegalArgumentException("departureDate must be after renDate");
+                }
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Error processing dates", e);
             }
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error processing dates", e);
+        } else {
+            throw new IllegalArgumentException("Room is rented by customer");
         }
     }
 
@@ -70,10 +73,10 @@ public class Room {
         rentDate = null;
         departureDate = null;
         renterID = 0;
-        billID = 0;
         bill = null;
         price = 0;
         getCustomer().checkOutRoom();
+        customer = null;
     }
 
     public void setPrice(List<Service> services) {

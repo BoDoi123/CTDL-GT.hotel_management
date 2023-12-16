@@ -11,11 +11,13 @@ public class Bill {
     private static AtomicInteger nextID = new AtomicInteger(1);
     private int id;
     private int roomID;
+    private int renterID;
     private int price;
 
     public Bill(Room room) {
         this.id = nextID.getAndIncrement();
         this.roomID = room.getId();
+        this.renterID = room.getCustomer().getId();
         this.price = room.getPrice();
     }
 }

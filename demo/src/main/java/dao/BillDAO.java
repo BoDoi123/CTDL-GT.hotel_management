@@ -35,7 +35,7 @@ public class BillDAO {
                 LOGGER.log(Level.FINE, "Bill deleted: {0}", roomID);
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error deleting bill from datatbase", e);
+            LOGGER.log(Level.SEVERE, "Error deleting bill from database", e);
         }
     }
 

@@ -132,7 +132,6 @@ public class CustomerDAO {
 
     private Customer mapResultSetToCustomer(ResultSet resultSet) throws SQLException {
         int id = resultSet.getInt("id");
-        int roomID = resultSet.getInt("room_id");
         String name = resultSet.getString("name");
         Customer.Gender gender = Customer.Gender.valueOf(resultSet.getString("gender"));
         LocalDate birthday = resultSet.getDate("birthday").toLocalDate();
@@ -146,19 +145,17 @@ public class CustomerDAO {
 
         Customer customer = new Customer(name, gender, birthday, identification, hometown);
         customer.setId(id);
-        customer.setRoomID(roomID);
         customer.setRentDate(rentDate);
         return customer;
     }
 
     public void customerRentRoom(Room room) {
         try (Connection connection = DatabaseConnection.getConnection()) {
-            String query = "UPDATE customer SET room_id = ?, rent_date = ? WHERE id = ?";
+            String query = "UPDATE customer SET rent_date = ? WHERE id = ?";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                preparedStatement.setInt(1, room.getId());
-                preparedStatement.setDate(2, Date.valueOf(room.getRentDate()));
-                preparedStatement.setInt(3, room.getCustomer().getId());
+                preparedStatement.setDate(1, Date.valueOf(room.getRentDate()));
+                preparedStatement.setInt(2, room.getCustomer().getId());
 
                 preparedStatement.executeUpdate();
                 LOGGER.log(Level.FINE, "customer updated: {0}", room.getCustomer().getId());
@@ -170,12 +167,11 @@ public class CustomerDAO {
 
     public void customerCheckOut(Room room) {
         try (Connection connection = DatabaseConnection.getConnection()) {
-            String query = "UPDATE customer SET room_id = ?, rent_date = ? WHERE id = ?";
+            String query = "UPDATE customer SET rent_date = ? WHERE id = ?";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                preparedStatement.setInt(1, 0);
-                preparedStatement.setDate(2, Date.valueOf(room.getRentDate()));
-                preparedStatement.setInt(3, room.getCustomer().getId());
+                preparedStatement.setDate(1, Date.valueOf(room.getRentDate()));
+                preparedStatement.setInt(2, room.getCustomer().getId());
 
                 preparedStatement.executeUpdate();
                 LOGGER.log(Level.FINE, "Customer checked out room: {0}", room.getId());

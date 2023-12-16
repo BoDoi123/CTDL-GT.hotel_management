@@ -93,7 +93,6 @@ public class CustomerDAOTest {
         assertNotNull(testCustomer, "Customer should be retrieved successfully");
 
         assertNotNull(testCustomer.getRentDate());
-        assertEquals(testCustomer.getRoomID(), 0);
     }
 
     @Test

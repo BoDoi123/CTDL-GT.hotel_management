@@ -80,11 +80,12 @@ public class RoomDAO {
 
     private void addBill(Bill bill) {
         try (Connection connection = DatabaseConnection.getConnection()) {
-            String query = "INSERT INTO bill (room_id, price) VALUES (?, ?)";
+            String query = "INSERT INTO bill (room_id, renter_id, price) VALUES (?, ?, ?)";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-                preparedStatement.setInt(1, bill.getId());
-                preparedStatement.setInt(2, bill.getPrice());
+                preparedStatement.setInt(1, bill.getRoomID());
+                preparedStatement.setInt(2, bill.getRenterID());
+                preparedStatement.setInt(3, bill.getPrice());
 
                 preparedStatement.executeUpdate();
 
@@ -145,7 +146,7 @@ public class RoomDAO {
             // Xóa các dịch vụ cũ
             deleteRoomServices(room);
 
-            // Thêm các dịch vụ mói vào phòng
+            // Thêm các dịch vụ mới vào phòng
             addRoomService(room);
 
             updateBill(room);
@@ -174,7 +175,7 @@ public class RoomDAO {
     // Tra phong khach san
     public void checkOutRoom(Room room) {
         try (Connection connection = DatabaseConnection.getConnection()) {
-            String query = "UPDATE room SET renter_id = ?, is_rented = ?, rent_date = ?, departure_date = ?, price = ?, bill_id = ? WHERE id = ?";
+            String query = "UPDATE room SET renter_id = ?, is_rented = ?, rent_date = ?, departure_date = ?, price = ? WHERE id = ?";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setInt(1, room.getRenterID());
@@ -182,8 +183,7 @@ public class RoomDAO {
                 preparedStatement.setDate(3, null);
                 preparedStatement.setDate(4, null);
                 preparedStatement.setInt(5, room.getPrice());
-                preparedStatement.setInt(6, room.getBillID());
-                preparedStatement.setInt(7, room.getId());
+                preparedStatement.setInt(6, room.getId());
 
                 preparedStatement.executeUpdate();
 
@@ -193,7 +193,7 @@ public class RoomDAO {
                 LOGGER.log(Level.FINE, "Room checked out: {0}", room.getId());
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error checked room in database", e);
+            LOGGER.log(Level.SEVERE, "Error checking out room in database", e);
         }
     }
 
@@ -310,6 +310,7 @@ public class RoomDAO {
     public Room mapResultSetToRoom(ResultSet resultSet) throws SQLException {
         int id = resultSet.getInt("id");
         boolean isRented = resultSet.getBoolean("is_rented");
+
         // Khi phòng trống
         if (!isRented) {
             Room room = new Room();

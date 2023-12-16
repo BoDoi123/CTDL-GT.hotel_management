@@ -10,8 +10,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.time.LocalDate;
-import java.util.LinkedList;
 import java.util.List;
+
 public class RentRoomAndCheckOutTest {
     private ServiceDAO serviceDAO;
     private RoomDAO roomDAO;
@@ -65,11 +65,11 @@ public class RentRoomAndCheckOutTest {
         Bill bill = roomDAO.getBillByRoomID(room.getId());
 
         assertEquals(room.getRenterID(), customer.getId());
-        assertEquals(room.getId(), customer.getRoomID());
         assertTrue(room.isRented());
         assertEquals(room.getRentDate(), customer.getRentDate());
         assertEquals(bill.getPrice(), room.getPrice());
         assertEquals(bill.getId(), room.getBillID());
+        assertEquals(bill.getRenterID(), customer.getId());
 
 
         // Thay đổi dịch vụ phòng
@@ -130,9 +130,9 @@ public class RentRoomAndCheckOutTest {
         assertNull(room.getRentDate());
         assertNull(room.getDepartureDate());
         assertEquals(0, room.getPrice());
-        assertEquals(0, room.getBillID());
-        assertEquals(0, customer.getRoomID());
+        assertEquals(bill.getId(), room.getBillID());
         assertNull(customer.getRentDate());
+        assertEquals(bill.getRenterID(), customer.getId());
     }
 
     @Test
