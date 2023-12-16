@@ -27,6 +27,7 @@ public class RoomDAO {
     private static final Logger LOGGER = Logger.getLogger(RoomDAO.class.getName());
     private CustomerDAO customerDAO = new CustomerDAO();
     private ServiceDAO serviceDAO = new ServiceDAO();
+    private BillDAO billDAO = new BillDAO();
 
     // Room
     public void addRoom(Room room) {
@@ -54,7 +55,7 @@ public class RoomDAO {
     // Thue phong khach san
     public void rentRoom(Room room) {
         try (Connection connection = DatabaseConnection.getConnection()) {
-            addBill(room.getBill());
+            billDAO.addBill(room.getBill());
 
             String query = "UPDATE room SET renter_id = ?, is_rented = ?, rent_date = ?, departure_date = ?, price = ?, bill_id = ? WHERE id = ?";
 
@@ -75,29 +76,6 @@ public class RoomDAO {
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error renting room", e);
-        }
-    }
-
-    private void addBill(Bill bill) {
-        try (Connection connection = DatabaseConnection.getConnection()) {
-            String query = "INSERT INTO bill (room_id, renter_id, price) VALUES (?, ?, ?)";
-
-            try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-                preparedStatement.setInt(1, bill.getRoomID());
-                preparedStatement.setInt(2, bill.getRenterID());
-                preparedStatement.setInt(3, bill.getPrice());
-
-                preparedStatement.executeUpdate();
-
-                try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
-                    if (generatedKeys.next()) {
-                        bill.setId(generatedKeys.getInt(1));
-                        LOGGER.log(Level.FINE, "Bill added: {0}", bill.getId());
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error adding bill to database", e);
         }
     }
 
@@ -132,7 +110,7 @@ public class RoomDAO {
 
                 preparedStatement.executeUpdate();
 
-                updateBill(room);
+                billDAO.updateBill(room);
                 LOGGER.log(Level.FINE, "Room updated: {0}", room.getId());
             }
         } catch (SQLException e) {
@@ -149,47 +127,31 @@ public class RoomDAO {
             // Thêm các dịch vụ mới vào phòng
             addRoomService(room);
 
-            updateBill(room);
+            billDAO.updateBill(room);
             LOGGER.log(Level.FINE, "Room services updated: {0}", room.getId());
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error updating room services in database", e);
         }
     }
 
-    private void updateBill(Room room) {
-        try (Connection connection = DatabaseConnection.getConnection()) {
-            String query = "UPDATE bill SET price = ? WHERE room_id = ?";
-
-            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                preparedStatement.setInt(1,room.getPrice());
-                preparedStatement.setInt(2,room.getId());
-
-                preparedStatement.executeUpdate();
-                LOGGER.log(Level.FINE, "Bill updated: {0}", room.getBillID());
-            }
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error updating bill to database", e);
-        }
-    }
-
     // Tra phong khach san
     public void checkOutRoom(Room room) {
         try (Connection connection = DatabaseConnection.getConnection()) {
-            String query = "UPDATE room SET renter_id = ?, is_rented = ?, rent_date = ?, departure_date = ?, price = ? WHERE id = ?";
+            printBill(room.getId());
+
+            String query = "UPDATE room SET is_rented = ?, rent_date = ?, departure_date = ?, price = ? WHERE id = ?";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                preparedStatement.setInt(1, room.getRenterID());
-                preparedStatement.setBoolean(2, false);
+                preparedStatement.setBoolean(1, false);
+                preparedStatement.setDate(2, null);
                 preparedStatement.setDate(3, null);
-                preparedStatement.setDate(4, null);
-                preparedStatement.setInt(5, room.getPrice());
-                preparedStatement.setInt(6, room.getId());
+                preparedStatement.setInt(4, room.getPrice());
+                preparedStatement.setInt(5, room.getId());
 
                 preparedStatement.executeUpdate();
 
                 customerDAO.customerCheckOut(room);
                 deleteRoomServices(room);
-                printBill(room.getId());
                 LOGGER.log(Level.FINE, "Room checked out: {0}", room.getId());
             }
         } catch (SQLException e) {
@@ -205,7 +167,7 @@ public class RoomDAO {
                 preparedStatement.setInt(1, room.getId());
 
                 preparedStatement.executeUpdate();
-                LOGGER.log(Level.FINE, "Room Services deleted: {0}", room.getServices().size());
+                LOGGER.log(Level.FINE, "Room Services deleted: {0}");
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error deleting room services in database", e);
@@ -214,8 +176,10 @@ public class RoomDAO {
 
     // In ra hóa đơn phòng khi trả phòng
     private void printBill(int roomID) {
-        Bill bill = getBillByRoomID(roomID);
+        Bill bill = billDAO.getBillByRoomID(roomID);
         List<Service> services = getRoomServices(roomID);
+        Room room = getRoomByID(roomID);
+        int totalPrice = 0;
 
         if (bill != null) {
             System.out.println("Bill Information: ");
@@ -224,43 +188,12 @@ public class RoomDAO {
             System.out.println("Room Services: ");
             for (Service service : services) {
                 System.out.println(service.getName() + ": " + service.getCost());
+                totalPrice += service.getCost();
             }
-            System.out.println("Price: " + bill.getPrice());
+            System.out.println("Price = " + room.getPriceCalculator().getNumberOfDays() + "(day) * " + totalPrice + " = " + bill.getPrice());
         } else {
             System.out.println("Bill not found for Room ID: " + roomID);
         }
-    }
-
-    public Bill getBillByRoomID(int roomID) {
-        try (Connection connection = DatabaseConnection.getConnection()) {
-            String query = "SELECT * FROM bill WHERE room_id = ?";
-
-            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                preparedStatement.setInt(1, roomID);
-
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    if (resultSet.next()) {
-                        LOGGER.log(Level.FINE, "Bill retrieved: {0}", roomID);
-                        return mapResultSetToBill(resultSet);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error getting bill from database", e);
-        }
-
-        return null;
-    }
-
-    public Bill mapResultSetToBill(ResultSet resultSet) throws SQLException {
-        int id = resultSet.getInt("id");
-        int roomID = resultSet.getInt("room_id");
-
-        Room room = getRoomByID(roomID);
-
-        Bill bill = new Bill(room);
-        bill.setId(id);
-        return bill;
     }
 
     // Truy vấn
@@ -314,7 +247,6 @@ public class RoomDAO {
         // Khi phòng trống
         if (!isRented) {
             Room room = new Room();
-            room.checkout();
             room.setId(id);
 
             return room;

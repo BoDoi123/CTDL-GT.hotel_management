@@ -27,7 +27,7 @@ public class Room {
     private int billID;
     private List<Service> services;
 
-    private PriceCalculator priceCalculator;
+    private SimplePriceCalculator priceCalculator;
 
     private static final Logger LOGGER = Logger.getLogger(Room.class.getName());
 
@@ -72,11 +72,8 @@ public class Room {
         services = null;
         rentDate = null;
         departureDate = null;
-        renterID = 0;
-        bill = null;
         price = 0;
-        getCustomer().checkOutRoom();
-        customer = null;
+        customer.checkOutRoom();
     }
 
     public void setPrice(List<Service> services) {
@@ -105,5 +102,9 @@ public class Room {
         priceCalculator = new SimplePriceCalculator(this.rentDate, this.departureDate);
         this.price = priceCalculator.calculatePrice(services);
         bill.setPrice(this.price);
+    }
+
+    public SimplePriceCalculator getSimplePriceCalculator() {
+        return new SimplePriceCalculator(this.rentDate, this.departureDate);
     }
 }

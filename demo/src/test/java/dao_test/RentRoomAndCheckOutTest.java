@@ -13,24 +13,18 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class RentRoomAndCheckOutTest {
-    private ServiceDAO serviceDAO;
     private RoomDAO roomDAO;
-    private CustomerDAO customerDAO;
 
     @BeforeEach
     public void setUp() {
         // Khởi tạo
         roomDAO = new RoomDAO();
-        serviceDAO = new ServiceDAO();
-        customerDAO = new CustomerDAO();
     }
 
     @AfterEach
     public void tearDown() {
         // Hủy tạo đối tượng
         roomDAO = null;
-        serviceDAO = null;
-        customerDAO = null;
     }
 
     @Test
@@ -43,13 +37,13 @@ public class RentRoomAndCheckOutTest {
         Service service1 = new Service("Service1", 10);
         Service service2 = new Service("Service2", 20);
         Service service3 = new Service("Service3", 30);
-        serviceDAO.addService(service1);
-        serviceDAO.addService(service2);
-        serviceDAO.addService(service3);
+        roomDAO.getServiceDAO().addService(service1);
+        roomDAO.getServiceDAO().addService(service2);
+        roomDAO.getServiceDAO().addService(service3);
 
         // Khởi tạo khách hàng
         Customer customer = new Customer("TestCustomer", Customer.Gender.Male, LocalDate.now().minusYears(20), "123456", "City");
-        customerDAO.addCustomer(customer);
+        roomDAO.getCustomerDAO().addCustomer(customer);
 
         // Khách hàng thực hiện thuê phòng
         LocalDate rentDate = LocalDate.now();
@@ -62,7 +56,7 @@ public class RentRoomAndCheckOutTest {
         roomDAO.rentRoom(room);
 
         // Lấy thông tin hóa đơn
-        Bill bill = roomDAO.getBillByRoomID(room.getId());
+        Bill bill = roomDAO.getBillDAO().getBillByRoomID(room.getId());
 
         assertEquals(room.getRenterID(), customer.getId());
         assertTrue(room.isRented());
@@ -75,16 +69,16 @@ public class RentRoomAndCheckOutTest {
         // Thay đổi dịch vụ phòng
         // Thêm dịch vụ
         Service newService = new Service("Service4", 15);
-        serviceDAO.addService(newService);
+        roomDAO.getServiceDAO().addService(newService);
 
         room.addService(newService);
 
         roomDAO.updateRoomServices(room);
 
         // Lấy thông tin hóa đơn
-        bill = roomDAO.getBillByRoomID(room.getId());
+        bill = roomDAO.getBillDAO().getBillByRoomID(room.getId());
 
-        assertEquals(room.getServices().size(), serviceDAO.getAllServices().size());
+        assertEquals(room.getServices().size(), roomDAO.getServiceDAO().getAllServices().size());
         assertTrue(room.isRented());
         assertEquals(bill.getPrice(), room.getPrice());
         assertEquals(bill.getId(), room.getBillID());
@@ -95,7 +89,7 @@ public class RentRoomAndCheckOutTest {
         roomDAO.updateRoomServices(room);
 
         // Lấy thông tin hóa đơn
-        bill = roomDAO.getBillByRoomID(room.getId());
+        bill = roomDAO.getBillDAO().getBillByRoomID(room.getId());
 
         assertEquals(room.getServices().size(), 3);
         assertTrue(room.isRented());
@@ -110,7 +104,7 @@ public class RentRoomAndCheckOutTest {
         roomDAO.updateDepartureDate(room);
 
         // Lấy thông tin hóa đơn
-        bill = roomDAO.getBillByRoomID(room.getId());
+        bill = roomDAO.getBillDAO().getBillByRoomID(room.getId());
 
         assertEquals(room.getDepartureDate(), departureDate);
         assertTrue(room.isRented());
@@ -125,7 +119,7 @@ public class RentRoomAndCheckOutTest {
         roomDAO.checkOutRoom(room);
 
         // Kiểm tra thông tin phòng
-        assertEquals(0, room.getRenterID());
+        assertEquals(1, room.getRenterID());
         assertFalse(room.isRented());
         assertNull(room.getRentDate());
         assertNull(room.getDepartureDate());

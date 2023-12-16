@@ -170,7 +170,7 @@ public class CustomerDAO {
             String query = "UPDATE customer SET rent_date = ? WHERE id = ?";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                preparedStatement.setDate(1, Date.valueOf(room.getRentDate()));
+                preparedStatement.setDate(1, null);
                 preparedStatement.setInt(2, room.getCustomer().getId());
 
                 preparedStatement.executeUpdate();

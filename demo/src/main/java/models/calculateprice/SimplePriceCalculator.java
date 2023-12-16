@@ -1,5 +1,8 @@
 package models.calculateprice;
 
+import lombok.Setter;
+import lombok.Getter;
+
 import models.Service;
 
 import java.time.LocalDate;
@@ -8,6 +11,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@Getter
+@Setter
 public class SimplePriceCalculator implements PriceCalculator {
     private long numberOfDays; // Số ngày đặt phòng
     private static final Logger LOGGER = Logger.getLogger(SimplePriceCalculator.class.getName());
