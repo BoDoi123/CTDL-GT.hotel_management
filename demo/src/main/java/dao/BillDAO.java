@@ -6,12 +6,9 @@ import lombok.Getter;
 import models.Bill;
 import models.Room;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.logging.Level;
@@ -25,12 +22,14 @@ public class BillDAO {
     // Thao tac co ban
     public void addBill(Bill bill) {
         try (Connection connection = DatabaseConnection.getConnection()) {
-            String query = "INSERT INTO bill (room_id, renter_id, price) VALUES (?, ?, ?)";
+            String query = "INSERT INTO bill (room_id, renter_id, rent_date, departure_date, price) VALUES (?, ?, ?, ?, ?)";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
                 preparedStatement.setInt(1, bill.getRoomID());
                 preparedStatement.setInt(2, bill.getRenterID());
-                preparedStatement.setInt(3, bill.getPrice());
+                preparedStatement.setDate(3, Date.valueOf(bill.getRentDate()));
+                preparedStatement.setDate(4, Date.valueOf(bill.getDepartureDate()));
+                preparedStatement.setInt(5, bill.getPrice());
 
                 preparedStatement.executeUpdate();
 
@@ -48,11 +47,12 @@ public class BillDAO {
 
     public void updateBill(Room room) {
         try (Connection connection = DatabaseConnection.getConnection()) {
-            String query = "UPDATE bill SET price = ? WHERE room_id = ?";
+            String query = "UPDATE bill SET departure_date = ?, price = ? WHERE room_id = ?";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                preparedStatement.setInt(1,room.getPrice());
-                preparedStatement.setInt(2,room.getId());
+                preparedStatement.setDate(1, Date.valueOf(room.getDepartureDate()));
+                preparedStatement.setInt(2, room.getPrice());
+                preparedStatement.setInt(3, room.getId());
 
                 preparedStatement.executeUpdate();
                 LOGGER.log(Level.FINE, "Bill updated: {0}", room.getBillID());
@@ -123,12 +123,16 @@ public class BillDAO {
         int id = resultSet.getInt("id");
         int roomID = resultSet.getInt("room_id");
         int renterID = resultSet.getInt("renter_id");
+        LocalDate rentDate = resultSet.getDate("rent_date").toLocalDate();
+        LocalDate departureDate = resultSet.getDate("departure_date").toLocalDate();
         int price = resultSet.getInt("price");
 
         Bill bill = new Bill();
         bill.setId(id);
         bill.setRoomID(roomID);
         bill.setRenterID(renterID);
+        bill.setRentDate(rentDate);
+        bill.setDepartureDate(departureDate);
         bill.setPrice(price);
         return bill;
     }

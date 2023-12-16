@@ -64,6 +64,8 @@ public class RentRoomAndCheckOutTest {
         assertEquals(bill.getPrice(), room.getPrice());
         assertEquals(bill.getId(), room.getBillID());
         assertEquals(bill.getRenterID(), customer.getId());
+        assertEquals(bill.getRentDate(), room.getRentDate());
+        assertEquals(bill.getDepartureDate(), room.getDepartureDate());
 
 
         // Thay đổi dịch vụ phòng
@@ -110,7 +112,7 @@ public class RentRoomAndCheckOutTest {
         assertTrue(room.isRented());
         assertEquals(bill.getPrice(), room.getPrice());
         assertEquals(room.getId(), bill.getRoomID());
-
+        assertEquals(bill.getDepartureDate(), room.getDepartureDate());
 
         // Khách thực hiện trả phòng khách sạn
         room.checkout();
@@ -127,6 +129,7 @@ public class RentRoomAndCheckOutTest {
         assertEquals(bill.getId(), room.getBillID());
         assertNull(customer.getRentDate());
         assertEquals(bill.getRenterID(), customer.getId());
+        assertEquals(bill.getDepartureDate(), departureDate);
     }
 
     @Test

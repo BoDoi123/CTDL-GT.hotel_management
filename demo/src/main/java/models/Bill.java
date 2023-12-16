@@ -3,6 +3,7 @@ package models;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Getter
@@ -12,6 +13,8 @@ public class Bill {
     private int id;
     private int roomID;
     private int renterID;
+    private LocalDate rentDate;
+    private LocalDate departureDate;
     private int price;
 
     public Bill() {
@@ -22,6 +25,8 @@ public class Bill {
         this();
         this.roomID = room.getId();
         this.renterID = room.getCustomer().getId();
+        this.rentDate = room.getRentDate();
+        this.departureDate = room.getDepartureDate();
         this.price = room.getPrice();
     }
 }

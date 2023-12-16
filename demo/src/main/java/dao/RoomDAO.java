@@ -185,6 +185,9 @@ public class RoomDAO {
             System.out.println("Bill Information: ");
             System.out.println("Bill ID: " + bill.getId());
             System.out.println("Room ID: " + roomID);
+            System.out.println("Customer name: " + room.getCustomer().getName());
+            System.out.println("Rent date: " + bill.getRentDate());
+            System.out.println("Departure date: " + bill.getDepartureDate());
             System.out.println("Room Services: ");
             for (Service service : services) {
                 System.out.println(service.getName() + ": " + service.getCost());

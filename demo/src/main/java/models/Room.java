@@ -98,7 +98,11 @@ public class Room {
     }
 
     public void updateDepartureDate(LocalDate departureDate) {
+        // Cập nhật ngày trả phòng
         this.departureDate = departureDate;
+        bill.setDepartureDate(departureDate);
+
+        // Cập nhật giá thuê
         priceCalculator = new SimplePriceCalculator(this.rentDate, this.departureDate);
         this.price = priceCalculator.calculatePrice(services);
         bill.setPrice(this.price);
