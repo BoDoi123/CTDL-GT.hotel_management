@@ -69,7 +69,6 @@ public class Room {
 
     public void checkout() {
         isRented = false;
-        services = null;
         rentDate = null;
         departureDate = null;
         price = 0;

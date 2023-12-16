@@ -138,4 +138,11 @@ public class RentRoomAndCheckOutTest {
 
         assertEquals(1, rooms.size());
     }
+
+    @Test
+    public void testGetAllBills() {
+        List<Bill> bills = roomDAO.getBillDAO().getAllBill();
+
+        assertEquals(1, bills.size());
+    }
 }

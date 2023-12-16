@@ -81,12 +81,13 @@ public class RoomDAO {
 
     private void addRoomService(Room room) {
         try (Connection connection = DatabaseConnection.getConnection()) {
-            String query = "INSERT INTO room_service (room_id, service_name) VALUES (?, ?)";
+            String query = "INSERT INTO room_service (room_id, service_name, process) VALUES (?, ?, ?)";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 for (Service service : room.getServices()) {
                     preparedStatement.setInt(1, room.getId());
                     preparedStatement.setString(2, service.getName());
+                    preparedStatement.setString(3, "Processing");
                     preparedStatement.addBatch();
                 }
 
@@ -134,6 +135,21 @@ public class RoomDAO {
         }
     }
 
+    private void deleteRoomServices(Room room) {
+        try (Connection connection = DatabaseConnection.getConnection()) {
+            String query = "DELETE FROM room_service WHERE room_id = ?";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setInt(1, room.getId());
+
+                preparedStatement.executeUpdate();
+                LOGGER.log(Level.FINE, "Room Services deleted: {0}");
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error deleting room services in database", e);
+        }
+    }
+
     // Tra phong khach san
     public void checkOutRoom(Room room) {
         try (Connection connection = DatabaseConnection.getConnection()) {
@@ -151,7 +167,7 @@ public class RoomDAO {
                 preparedStatement.executeUpdate();
 
                 customerDAO.customerCheckOut(room);
-                deleteRoomServices(room);
+                finishedServices(room);
                 LOGGER.log(Level.FINE, "Room checked out: {0}", room.getId());
             }
         } catch (SQLException e) {
@@ -159,18 +175,19 @@ public class RoomDAO {
         }
     }
 
-    private void deleteRoomServices(Room room) {
+    private void finishedServices(Room room) {
         try (Connection connection = DatabaseConnection.getConnection()) {
-            String query = "DELETE FROM room_service WHERE room_id = ?";
+            String query = "UPDATE room_service SET process = ? WHERE room_id = ?";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                preparedStatement.setInt(1, room.getId());
+                preparedStatement.setString(1, "Finished");
+                preparedStatement.setInt(2, room.getId());
 
                 preparedStatement.executeUpdate();
-                LOGGER.log(Level.FINE, "Room Services deleted: {0}");
+                LOGGER.log(Level.FINE, "Finished room services: {0}", room.getId());
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error deleting room services in database", e);
+            LOGGER.log(Level.SEVERE, "Error finishing room services in database", e);
         }
     }
 
@@ -179,7 +196,7 @@ public class RoomDAO {
         Bill bill = billDAO.getBillByRoomID(roomID);
         List<Service> services = getRoomServices(roomID);
         Room room = getRoomByID(roomID);
-        int totalPrice = 0;
+        int price = room.getSimplePriceCalculator().getPricePerDay();
 
         if (bill != null) {
             System.out.println("Bill Information: ");
@@ -191,9 +208,9 @@ public class RoomDAO {
             System.out.println("Room Services: ");
             for (Service service : services) {
                 System.out.println(service.getName() + ": " + service.getCost());
-                totalPrice += service.getCost();
+                price += service.getCost();
             }
-            System.out.println("Price = " + room.getPriceCalculator().getNumberOfDays() + "(day) * " + totalPrice + " = " + bill.getPrice());
+            System.out.println("Price = " + room.getPriceCalculator().getNumberOfDays() + "(day) * " + price + " = " + bill.getPrice());
         } else {
             System.out.println("Bill not found for Room ID: " + roomID);
         }
