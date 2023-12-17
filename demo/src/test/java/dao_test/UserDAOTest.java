@@ -118,7 +118,7 @@ public class UserDAOTest {
     }
 
     @Test
-    public void testGetUserRoleByUsernme() {
+    public void testGetUserRoleByUsername() {
         // Phương thức kiểm thử lấy User Role theo usernam
         User sampleUser = createTestUser();
         userDAO.addUser(sampleUser);
