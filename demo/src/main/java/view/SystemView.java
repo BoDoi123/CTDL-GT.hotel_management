@@ -1,21 +1,18 @@
 package view;
 
 import controller.RoomController;
+import models.Customer;
 import models.Employee;
 import models.Room;
 import models.Service;
 import dao.EmployeeDAO;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.DateFormatter;
 import javax.swing.text.DefaultFormatterFactory;
@@ -24,6 +21,10 @@ import java.awt.*;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 
 public class SystemView extends javax.swing.JFrame {
@@ -33,7 +34,7 @@ public class SystemView extends javax.swing.JFrame {
     private RoomController roomController;
     private javax.swing.JCheckBox maleCheckbox;
     private javax.swing.JCheckBox femaleCheckbox;
-    private javax.swing.JFormattedTextField identificationNumber;
+    private javax.swing.JFormattedTextField identificationNumberField;
     private javax.swing.JSpinner birthDaySpinner;
     private javax.swing.JSpinner departureDateSpinner;
     private javax.swing.JTextField fullNameTextField;
@@ -41,9 +42,6 @@ public class SystemView extends javax.swing.JFrame {
     private javax.swing.JTable roomTable;
     private javax.swing.JTable serviceTable;
     private javax.swing.JLabel staffLabel;
-    private javax.swing.JPopupMenu servicePopupMenu;
-    private javax.swing.JMenuItem deleteServiceMenuItem;
-    private javax.swing.JMenuItem editServiceMenuItem;
 
     public SystemView(int userID) {
         initComponents();
@@ -87,7 +85,7 @@ public class SystemView extends javax.swing.JFrame {
         maleCheckbox = new JCheckBox();
         femaleCheckbox = new JCheckBox();
         birthDaySpinner = new JSpinner();
-        identificationNumber = new JFormattedTextField();
+        identificationNumberField = new JFormattedTextField();
         homeTownTextField = new JTextField();
         JLabel jLabel9 = new JLabel();
         departureDateSpinner = new JSpinner();
@@ -102,9 +100,9 @@ public class SystemView extends javax.swing.JFrame {
         JButton refreshButtonService = new JButton();
         JButton addServiceButton = new JButton();
         JButton addRoomButton = new JButton();
-        servicePopupMenu = new javax.swing.JPopupMenu();
-        deleteServiceMenuItem = new javax.swing.JMenuItem();
-        editServiceMenuItem = new javax.swing.JMenuItem();
+        JPopupMenu servicePopupMenu = new JPopupMenu();
+        JMenuItem deleteServiceMenuItem = new JMenuItem();
+        JMenuItem editServiceMenuItem = new JMenuItem();
 
         deleteServiceMenuItem.setText("Delete Service");
         servicePopupMenu.add(deleteServiceMenuItem);
@@ -286,7 +284,8 @@ public class SystemView extends javax.swing.JFrame {
         birthDaySpinner.setModel(new SpinnerDateModel());
         birthDaySpinner.setEditor(new JSpinner.DateEditor(birthDaySpinner, "dd/MM/yyyy"));
 
-        identificationNumber.setFormatterFactory(new DefaultFormatterFactory(new NumberFormatter(new DecimalFormat("#"))));
+        identificationNumberField.setFormatterFactory(new DefaultFormatterFactory(new NumberFormatter(new DecimalFormat("#"))));
+        identificationNumberField.addPropertyChangeListener(this::identificationNumberPropertyChange);
 
         homeTownTextField.setFont(new Font("Times New Roman", Font.PLAIN, 15)); // NOI18N
 
@@ -295,6 +294,7 @@ public class SystemView extends javax.swing.JFrame {
 
         departureDateSpinner.setModel(new SpinnerDateModel());
         departureDateSpinner.setEditor(new JSpinner.DateEditor(departureDateSpinner, "dd/MM/yyyy"));
+        departureDateSpinner.addPropertyChangeListener(this::departureDatePropertyChange);
 
         jLabel8.setFont(new Font("Times New Roman", Font.BOLD, 18)); // NOI18N
         jLabel8.setText("Danh sách dịch vụ (Tích chọn):");
@@ -306,6 +306,7 @@ public class SystemView extends javax.swing.JFrame {
             }
         };
         roomTable.setModel(roomModel);
+        roomTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         roomModel.addColumn("id");
         roomModel.addColumn("statement");
         roomModel.addColumn("price/day");
@@ -323,6 +324,7 @@ public class SystemView extends javax.swing.JFrame {
             }
         };
         serviceTable.setModel(serviceModel);
+        serviceTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         serviceModel.addColumn("service_name");
         serviceModel.addColumn("cost");
 
@@ -335,6 +337,7 @@ public class SystemView extends javax.swing.JFrame {
 
         rentRoomButton.setFont(new Font("Times New Roman", Font.BOLD, 18)); // NOI18N
         rentRoomButton.setText("Bắt đầu thuê");
+        rentRoomButton.addActionListener(this::rentRoomActionPerformed);
 
         refreshButtonRoom.setText("Refresh");
         refreshButtonRoom.addActionListener(this::refreshButtonRoomActionPerformed);
@@ -365,7 +368,7 @@ public class SystemView extends javax.swing.JFrame {
                                                                 .addGap(34, 34, 34)
                                                                 .addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                                                                         .addComponent(homeTownTextField)
-                                                                        .addComponent(identificationNumber)
+                                                                        .addComponent(identificationNumberField)
                                                                         .addComponent(departureDateSpinner)))
                                                         .addGroup(jPanel1Layout.createSequentialGroup()
                                                                 .addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -381,7 +384,7 @@ public class SystemView extends javax.swing.JFrame {
                                                                                                 .addGap(30, 30, 30)
                                                                                                 .addComponent(femaleCheckbox, GroupLayout.PREFERRED_SIZE, 85, GroupLayout.PREFERRED_SIZE))
                                                                                         .addComponent(fullNameTextField, GroupLayout.PREFERRED_SIZE, 332, GroupLayout.PREFERRED_SIZE)
-                                                                                        .addComponent(birthDaySpinner, GroupLayout.PREFERRED_SIZE, 247, GroupLayout.PREFERRED_SIZE)))
+                                                                                        .addComponent(birthDaySpinner, GroupLayout.PREFERRED_SIZE, 332, GroupLayout.PREFERRED_SIZE)))
                                                                         .addComponent(rentRoomButton, GroupLayout.PREFERRED_SIZE, 147, GroupLayout.PREFERRED_SIZE))
                                                                 .addGap(0, 0, Short.MAX_VALUE))))
                                         .addGroup(jPanel1Layout.createSequentialGroup()
@@ -435,7 +438,7 @@ public class SystemView extends javax.swing.JFrame {
                                                 .addGap(15, 15, 15)
                                                 .addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                                         .addComponent(jLabel6, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE)
-                                                        .addComponent(identificationNumber, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE))
+                                                        .addComponent(identificationNumberField, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE))
                                                 .addGap(15, 15, 15)
                                                 .addGroup(jPanel1Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                                         .addComponent(jLabel7, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE)
@@ -571,7 +574,101 @@ public class SystemView extends javax.swing.JFrame {
     }
 
     private void rentRoomActionPerformed(java.awt.event.ActionEvent evt) {
+        LocalDate rentDate = LocalDate.now();
+        Date date = (Date) departureDateSpinner.getValue();
+        LocalDate departureDate = convertToLocalDate(date);
 
+        Date date1 = (Date) birthDaySpinner.getValue();
+        LocalDate birthday =  convertToLocalDate(date1);
+        String hometown = String.valueOf(homeTownTextField.getText());
+
+        String nameCustomer = String.valueOf(fullNameTextField.getText());
+        String identification = String.valueOf(identificationNumberField.getText());
+
+        int[] selectedRow = serviceTable.getSelectedRows();
+        int row = roomTable.getSelectedRow();
+
+        if (nameCustomer == null || birthday == null || identification == null || hometown == null) {
+            JOptionPane.showMessageDialog(this, "Vui lòng không để trống dữ liệu", "Thuê phòng thất bại", JOptionPane.WARNING_MESSAGE);
+        } else if (rentDate.isAfter(departureDate)) {
+            JOptionPane.showMessageDialog(this, "Ngày trả phòng phải sau ngày thuê", "Thuê phòng thất bại", JOptionPane.PLAIN_MESSAGE);
+        }
+
+        // Chọn phòng thuê
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn phòng trống", "Thuê phòng thất bại", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        int roomID = Integer.parseInt(String.valueOf(roomTable.getValueAt(row, 0)));
+        Room room = roomController.getRoomDAO().getRoomByID(roomID);
+
+        Customer customer = roomController.getRoomDAO().getCustomerDAO().getCustomerByIdentification(identification);
+
+        // Nếu là khách hàng quen
+        if (customer != null) {
+            room.rentRoom(customer, rentDate, departureDate);
+
+            // Chọn danh sách dịch vụ
+            for (int i : selectedRow) {
+                String serviceName = String.valueOf(serviceTable.getValueAt(i, 0));
+
+                room.addService(roomController.getRoomDAO().getServiceDAO().getServiceByName(serviceName));
+            }
+
+            roomController.getRoomDAO().rentRoom(room);
+            JOptionPane.showMessageDialog(this, "Thuê phòng thành công", "Thông báo", JOptionPane.PLAIN_MESSAGE);
+            return;
+        }
+
+        // Khách hàng mới
+        if (maleCheckbox.isSelected()) {
+            customer = new Customer(nameCustomer, Customer.Gender.Male, birthday, identification, hometown);
+        } else if (femaleCheckbox.isSelected()) {
+            customer = new Customer(nameCustomer, Customer.Gender.Female, birthday, identification, hometown);
+        } else {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn giới tính", "Thuê phòng thất bại", JOptionPane.PLAIN_MESSAGE);
+        }
+        assert customer != null;
+        roomController.getRoomDAO().getCustomerDAO().addCustomer(customer);
+
+        // Bắt đầu thuê phòng
+        room.rentRoom(customer, rentDate, departureDate);
+
+        // Chọn danh sách dịch vụ
+        for (int i : selectedRow) {
+            String serviceName = String.valueOf(serviceTable.getValueAt(i, 0));
+
+            room.addService(roomController.getRoomDAO().getServiceDAO().getServiceByName(serviceName));
+        }
+
+        roomController.getRoomDAO().rentRoom(room);
+        JOptionPane.showMessageDialog(this, "Thuê phòng thành công", "Thông báo", JOptionPane.PLAIN_MESSAGE);
+    }
+
+    private void identificationNumberPropertyChange(java.beans.PropertyChangeEvent evt) {
+        String identification = String.valueOf(identificationNumberField.getText());
+
+        Customer customer = roomController.getRoomDAO().getCustomerDAO().getCustomerByIdentification(identification);
+        if (customer != null) {
+            JOptionPane.showMessageDialog(this, "Khách hàng đã có trong dữ liệu của khách sạn \n Chỉ cần nhập CMND/CCCD là được.", "Thông báo", JOptionPane.PLAIN_MESSAGE);
+        }
+    }
+
+    private void departureDatePropertyChange(java.beans.PropertyChangeEvent evt) {
+        Date date = (Date) departureDateSpinner.getValue();
+
+        LocalDate departureDate = convertToLocalDate(date);
+        LocalDate rentDate = LocalDate.now();
+
+        if (departureDate.isBefore(rentDate)) {
+            JOptionPane.showMessageDialog(this, "Ngày trả phải sau ngày sau thuê", "Thông báo", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    private LocalDate convertToLocalDate(Date utilDate) {
+        Instant instant = utilDate.toInstant();
+
+        return instant.atZone(ZoneId.systemDefault()).toLocalDate();
     }
 
     private String getPath(String path) {

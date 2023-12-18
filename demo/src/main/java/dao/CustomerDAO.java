@@ -108,6 +108,27 @@ public class CustomerDAO {
         return null;
     }
 
+    public Customer getCustomerByIdentification(String identification) {
+        try (Connection connection = DatabaseConnection.getConnection()) {
+            String query = "SELECT * FROM customer WHERE identification = ?";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setString(1, identification);
+
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        LOGGER.log(Level.FINE, "Customer retrieved: {0}", mapResultSetToCustomer(resultSet).getName());
+                        return mapResultSetToCustomer(resultSet);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error getting customer by identification from database", e);
+        }
+
+        return null;
+    }
+
     public List<Customer> getAllCustomers() {
         List<Customer> customers = new LinkedList<>();
 
