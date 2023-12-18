@@ -41,6 +41,9 @@ public class SystemView extends javax.swing.JFrame {
     private javax.swing.JTable roomTable;
     private javax.swing.JTable serviceTable;
     private javax.swing.JLabel staffLabel;
+    private javax.swing.JPopupMenu servicePopupMenu;
+    private javax.swing.JMenuItem deleteServiceMenuItem;
+    private javax.swing.JMenuItem editServiceMenuItem;
 
     public SystemView(int userID) {
         initComponents();
@@ -99,6 +102,17 @@ public class SystemView extends javax.swing.JFrame {
         JButton refreshButtonService = new JButton();
         JButton addServiceButton = new JButton();
         JButton addRoomButton = new JButton();
+        servicePopupMenu = new javax.swing.JPopupMenu();
+        deleteServiceMenuItem = new javax.swing.JMenuItem();
+        editServiceMenuItem = new javax.swing.JMenuItem();
+
+        deleteServiceMenuItem.setText("Delete Service");
+        servicePopupMenu.add(deleteServiceMenuItem);
+        deleteServiceMenuItem.addActionListener(this::deleteServiceMenuItemActionPerformed);
+
+        editServiceMenuItem.setText("Edit Service");
+        servicePopupMenu.add(editServiceMenuItem);
+        editServiceMenuItem.addActionListener(this::editServiceMenuItemActionPerformed);
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle("QUẢN LÝ KHÁCH SẠN");
@@ -317,6 +331,7 @@ public class SystemView extends javax.swing.JFrame {
             serviceModel.addRow(new Object[]{service.getName(), service.getCost()});
         }
         jScrollPane2.setViewportView(serviceTable);
+        serviceTable.setComponentPopupMenu(servicePopupMenu);
 
         rentRoomButton.setFont(new Font("Times New Roman", Font.BOLD, 18)); // NOI18N
         rentRoomButton.setText("Bắt đầu thuê");
@@ -524,6 +539,35 @@ public class SystemView extends javax.swing.JFrame {
         loginView.setVisible(true);
 
         this.dispose();
+    }
+    
+    private void deleteServiceMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
+        int row = serviceTable.getSelectedRow();
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn dịch vụ trước", "Thông báo", JOptionPane.WARNING_MESSAGE);
+        } else {
+            int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa dịch vụ không?");
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                String serviceName = String.valueOf(serviceTable.getValueAt(row, 0));
+
+                roomController.getRoomDAO().getServiceDAO().deleteService(serviceName);
+                JOptionPane.showMessageDialog(this, "Đã xóa dịch vụ thành công", "Thông báo", JOptionPane.PLAIN_MESSAGE);
+            }
+        }
+    }
+
+    private void editServiceMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
+        int row = serviceTable.getSelectedRow();
+
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn dịch vụ trước", "Thông báo", JOptionPane.WARNING_MESSAGE);
+        } else {
+            String nameService = String.valueOf(serviceTable.getValueAt(row, 0));
+            int costService = Integer.parseInt(String.valueOf(serviceTable.getValueAt(row, 1)));
+
+            new EditServiceView(nameService, costService).setVisible(true);
+        }
     }
 
     private void rentRoomActionPerformed(java.awt.event.ActionEvent evt) {

@@ -24,8 +24,6 @@ public class AddServiceView extends javax.swing.JFrame {
         costServiceField = new javax.swing.JFormattedTextField();
         JButton addServiceButton = new JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
         jLabel1.setFont(new java.awt.Font("Times New Roman", Font.BOLD, 18)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("THÊM DỊCH VỤ MỚI");
@@ -105,21 +103,5 @@ public class AddServiceView extends javax.swing.JFrame {
 
         JOptionPane.showMessageDialog(this, "Thêm dịch vụ thành công", "Thông báo", JOptionPane.PLAIN_MESSAGE);
         this.dispose();
-    }
-
-    public static void main(String[] args) {
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException | InstantiationException | UnsupportedLookAndFeelException |
-                 IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(AddServiceView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-
-        java.awt.EventQueue.invokeLater(() -> new AddServiceView().setVisible(true));
     }
 }
