@@ -629,7 +629,6 @@ public class SystemView extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn giới tính", "Thuê phòng thất bại", JOptionPane.PLAIN_MESSAGE);
             return;
         }
-        assert customer != null;
         roomController.getRoomDAO().getCustomerDAO().addCustomer(customer);
 
         // Bắt đầu thuê phòng
