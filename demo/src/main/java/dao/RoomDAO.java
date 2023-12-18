@@ -16,6 +16,7 @@ import java.sql.Date;
 import java.sql.Statement;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.logging.Level;
@@ -36,7 +37,7 @@ public class RoomDAO {
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
                 preparedStatement.setBoolean(1, false);
-                preparedStatement.setInt(2, 0);
+                preparedStatement.setInt(2, room.getPrice());
 
                 preparedStatement.executeUpdate();
 
@@ -236,6 +237,48 @@ public class RoomDAO {
         }
 
         return null;
+    }
+
+    public List<Room> getRoomsWithStateFalse() {
+        List<Room> rooms = new ArrayList<>();
+
+        try (Connection connection = DatabaseConnection.getConnection()) {
+            String query = "SELECT * FROM room WHERE is_rented = 0";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                while (resultSet.next()) {
+                    Room room = mapResultSetToRoom(resultSet);
+                    rooms.add(room);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error getting all room with false", e);
+        }
+
+        return rooms;
+    }
+
+    public List<Room> getRoomsWithStateTrue() {
+        List<Room> rooms = new ArrayList<>();
+
+        try (Connection connection = DatabaseConnection.getConnection()) {
+            String query = "SELECT * FROM room WHERE is_rented = 1";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                while (resultSet.next()) {
+                    Room room = mapResultSetToRoom(resultSet);
+                    rooms.add(room);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error getting all room with false", e);
+        }
+
+        return rooms;
     }
 
     public List<Room> getAllRooms() {

@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 @Setter
 public class SimplePriceCalculator implements PriceCalculator {
     private long numberOfDays; // Số ngày đặt phòng
-    private int pricePerDay = 100; // Giá thuê một ngày
+    private int pricePerDay = 50000; // Giá thuê một ngày
     private static final Logger LOGGER = Logger.getLogger(SimplePriceCalculator.class.getName());
 
     public SimplePriceCalculator(LocalDate rentDate, LocalDate departureDate) {

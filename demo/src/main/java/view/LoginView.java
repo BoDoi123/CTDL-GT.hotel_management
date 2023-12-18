@@ -2,11 +2,16 @@ package view;
 
 import controller.UserController;
 import dao.UserDAO;
+import dao.EmployeeDAO;
+import models.Employee;
+import models.User;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.LocalDate;
 
 public class LoginView extends javax.swing.JFrame {
+    private EmployeeDAO employeeDAO;
     private final UserController userController;
     private javax.swing.JPasswordField passwordField;
     private javax.swing.JTextField accountField;
@@ -16,6 +21,7 @@ public class LoginView extends javax.swing.JFrame {
         initComponents();
         UserDAO userDAO = new UserDAO();
         userController = new UserController(userDAO);
+        employeeDAO = new EmployeeDAO();
     }
 
     public LoginView(UserController userController) {
@@ -129,6 +135,12 @@ public class LoginView extends javax.swing.JFrame {
 
         if (userController.loginUser(account, password)) {
             JOptionPane.showMessageDialog(this, "Bắt đầu làm việc", "Đăng nhập thành công", JOptionPane.PLAIN_MESSAGE);
+
+            SystemView systemView = new SystemView(userController.getUserDAO().getIDByUsername(account));
+            systemView.setVisible(true);
+            systemView.setExtendedState(JFrame.MAXIMIZED_BOTH);
+
+            this.dispose();
         } else {
             JOptionPane.showMessageDialog(this, "Tài khoản hoặc mật khẩu sai", "Đăng nhập thất bại", JOptionPane.WARNING_MESSAGE);
         }

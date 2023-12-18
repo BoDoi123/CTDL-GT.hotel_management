@@ -33,7 +33,7 @@ public class Room {
 
     public Room() {
         this.id = nextID.getAndIncrement();
-        this.price = 0;
+        this.price = 50000;
         this.isRented = false;
     }
 
@@ -71,7 +71,7 @@ public class Room {
         isRented = false;
         rentDate = null;
         departureDate = null;
-        price = 0;
+        price = 50000;
         customer.checkOutRoom();
     }
 

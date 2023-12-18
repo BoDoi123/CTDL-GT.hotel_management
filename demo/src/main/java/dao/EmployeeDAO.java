@@ -113,6 +113,27 @@ public class EmployeeDAO {
         return null;
     }
 
+    public Employee getEmployeeByUserID(int userID) {
+        try (Connection connection = DatabaseConnection.getConnection()) {
+            String query = "SELECT * FROM employee WHERE user_id = ?";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setInt(1, userID);
+
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        LOGGER.log(Level.FINE, "Employee retrieved: {0}" + mapResultSetToEmployee(resultSet).getName());
+                        return mapResultSetToEmployee(resultSet);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error getting employee from database", e);
+        }
+
+        return null;
+    }
+
     public List<Employee> getAllEmployeesRoleStaff() {
         List<Employee> employees = new LinkedList<>();
 
