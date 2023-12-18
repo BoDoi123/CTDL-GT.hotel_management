@@ -627,6 +627,7 @@ public class SystemView extends javax.swing.JFrame {
             customer = new Customer(nameCustomer, Customer.Gender.Female, birthday, identification, hometown);
         } else {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn giới tính", "Thuê phòng thất bại", JOptionPane.PLAIN_MESSAGE);
+            return;
         }
         assert customer != null;
         roomController.getRoomDAO().getCustomerDAO().addCustomer(customer);
