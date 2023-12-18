@@ -170,4 +170,11 @@ public class LoginView extends javax.swing.JFrame {
 
         java.awt.EventQueue.invokeLater(() -> new LoginView().setVisible(true));
     }
+
+    private void createUserAndEmployee() {
+        User user = new User("User1", "123456", User.Role.Manager);
+        userController.getUserDAO().addUser(user);
+        Employee employee = new Employee(user, "Chu Long", "Ha Noi", "1234567", LocalDate.of(2002, 05, 22), Employee.Gender.Male, 10000000);
+        employeeDAO.addEmployee(employee);
+    }
 }
