@@ -82,10 +82,6 @@ public class Room {
         bill.setPrice(price);
     }
 
-    public List<Service> getServices() {
-        return new LinkedList<>(services);
-    }
-
     public void addService(Service service) {
         this.services.add(service);
         setPrice(services);
@@ -93,6 +89,11 @@ public class Room {
 
     public void removeService(Service service) {
         this.services.remove(service);
+        setPrice(services);
+    }
+
+    public void setServices(List<Service> services) {
+        this.services = services;
         setPrice(services);
     }
 

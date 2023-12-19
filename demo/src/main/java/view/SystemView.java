@@ -1,6 +1,7 @@
 package view;
 
 import controller.RoomController;
+import controller.ServiceController;
 import models.Customer;
 import models.Employee;
 import models.Room;
@@ -28,6 +29,7 @@ import java.util.Date;
 import java.util.List;
 
 public class SystemView extends javax.swing.JFrame {
+    private ServiceController serviceController;
     private EmployeeDAO employeeDAO;
     private DefaultTableModel roomModel;
     private DefaultTableModel serviceModel;
@@ -55,6 +57,7 @@ public class SystemView extends javax.swing.JFrame {
 
 
     private void initComponents() {
+        serviceController = new ServiceController();
         roomController = new RoomController();
         employeeDAO = new EmployeeDAO();
         JPanel abilityPanel = new JPanel();
@@ -294,7 +297,7 @@ public class SystemView extends javax.swing.JFrame {
 
         departureDateSpinner.setModel(new SpinnerDateModel());
         departureDateSpinner.setEditor(new JSpinner.DateEditor(departureDateSpinner, "dd/MM/yyyy"));
-        departureDateSpinner.addPropertyChangeListener(this::departureDatePropertyChange);
+        departureDateSpinner.addChangeListener(this::departureDateSpinnerStateChanged);
 
         jLabel8.setFont(new Font("Times New Roman", Font.BOLD, 18)); // NOI18N
         jLabel8.setText("Danh sách dịch vụ (Tích chọn):");
@@ -505,6 +508,7 @@ public class SystemView extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }
 
+    // Event nhấn nút refresh RoomTable
     private void refreshButtonRoomActionPerformed(java.awt.event.ActionEvent evt) {
         roomModel.setRowCount(0);
 
@@ -514,6 +518,7 @@ public class SystemView extends javax.swing.JFrame {
         }
     }
 
+    // Event nhấn nút refresh ServiceTable
     private void refreshButtonServiceActionPerformed(java.awt.event.ActionEvent evt) {
         serviceModel.setRowCount(0);
 
@@ -523,19 +528,27 @@ public class SystemView extends javax.swing.JFrame {
         }
     }
 
+    // Event nhấn nút add RoomTable
     private void addRoomButtonActionPerformed(java.awt.event.ActionEvent evt) {
         Room room = new Room();
         roomController.getRoomDAO().addRoom(room);
 
-        JOptionPane.showMessageDialog(this, "Thêm phòng thành công", "Thông báo", JOptionPane.PLAIN_MESSAGE);
+        roomModel.setRowCount(0);
+
+        List<Room> rooms = roomController.getAllRoomWithStateFalse();
+        for (Room room1 : rooms) {
+            roomModel.addRow(new Object[]{room1.getId(), "Phòng trống", room1.getPrice()});
+        }
     }
 
+    // Event nhấn nút add ServiceTable
     private void addServiceButtonActionPerformed(java.awt.event.ActionEvent evt) {
         AddServiceView addServiceView = new AddServiceView();
 
         addServiceView.setVisible(true);
     }
 
+    // Event nhấn nút đăng xuất
     private void logoutButtonActionPerformed(java.awt.event.ActionEvent evt) {
         LoginView loginView = new LoginView();
 
@@ -543,7 +556,8 @@ public class SystemView extends javax.swing.JFrame {
 
         this.dispose();
     }
-    
+
+    // Event nhấn nút delete trong menuPopup
     private void deleteServiceMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
         int row = serviceTable.getSelectedRow();
         if (row == -1) {
@@ -554,12 +568,22 @@ public class SystemView extends javax.swing.JFrame {
             if (confirm == JOptionPane.YES_OPTION) {
                 String serviceName = String.valueOf(serviceTable.getValueAt(row, 0));
 
-                roomController.getRoomDAO().getServiceDAO().deleteService(serviceName);
-                JOptionPane.showMessageDialog(this, "Đã xóa dịch vụ thành công", "Thông báo", JOptionPane.PLAIN_MESSAGE);
+                if (!serviceController.deleteService(serviceName)) {
+                    JOptionPane.showMessageDialog(this, "Dịch vụ đang được sử dụng không thể xóa", "Xóa thất bại", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
+                serviceModel.setRowCount(0);
+
+                List<Service> services = roomController.getRoomDAO().getServiceDAO().getAllServices();
+                for (Service service : services) {
+                    serviceModel.addRow(new Object[]{service.getName(), service.getCost()});
+                }
             }
         }
     }
 
+    // Event nhấn nút add trong menuPopup
     private void editServiceMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
         int row = serviceTable.getSelectedRow();
 
@@ -573,6 +597,7 @@ public class SystemView extends javax.swing.JFrame {
         }
     }
 
+    // Event nhấn nút bắt đầu thuê
     private void rentRoomActionPerformed(java.awt.event.ActionEvent evt) {
         LocalDate rentDate = LocalDate.now();
         Date date = (Date) departureDateSpinner.getValue();
@@ -590,8 +615,10 @@ public class SystemView extends javax.swing.JFrame {
 
         if (nameCustomer == null || birthday == null || identification == null || hometown == null) {
             JOptionPane.showMessageDialog(this, "Vui lòng không để trống dữ liệu", "Thuê phòng thất bại", JOptionPane.WARNING_MESSAGE);
-        } else if (rentDate.isAfter(departureDate)) {
-            JOptionPane.showMessageDialog(this, "Ngày trả phòng phải sau ngày thuê", "Thuê phòng thất bại", JOptionPane.PLAIN_MESSAGE);
+            return;
+        } else if (rentDate.isAfter(departureDate) || rentDate.equals(departureDate)) {
+            JOptionPane.showMessageDialog(this, "Ngày trả phòng phải sau ngày thuê", "Thuê phòng thất bại", JOptionPane.WARNING_MESSAGE);
+            return;
         }
 
         // Chọn phòng thuê
@@ -617,6 +644,14 @@ public class SystemView extends javax.swing.JFrame {
 
             roomController.getRoomDAO().rentRoom(room);
             JOptionPane.showMessageDialog(this, "Thuê phòng thành công", "Thông báo", JOptionPane.PLAIN_MESSAGE);
+            new RoomInformationView(roomID).setVisible(true);
+
+            roomModel.setRowCount(0);
+
+            List<Room> rooms = roomController.getAllRoomWithStateFalse();
+            for (Room room1 : rooms) {
+                roomModel.addRow(new Object[]{room1.getId(), "Phòng trống", room1.getPrice()});
+            }
             return;
         }
 
@@ -643,8 +678,27 @@ public class SystemView extends javax.swing.JFrame {
 
         roomController.getRoomDAO().rentRoom(room);
         JOptionPane.showMessageDialog(this, "Thuê phòng thành công", "Thông báo", JOptionPane.PLAIN_MESSAGE);
+        new RoomInformationView(roomID).setVisible(true);
+
+        roomModel.setRowCount(0);
+
+        List<Room> rooms = roomController.getAllRoomWithStateFalse();
+        for (Room room1 : rooms) {
+            roomModel.addRow(new Object[]{room1.getId(), "Phòng trống", room1.getPrice()});
+        }
     }
 
+    private void departureDateSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {
+        Date date = (Date) departureDateSpinner.getValue();
+        LocalDate departureDate = convertToLocalDate(date);
+        LocalDate rentDate = LocalDate.now();
+
+        if (departureDate.isBefore(rentDate)) {
+            JOptionPane.showMessageDialog(this, "Ngày trả phải sau ngày thuê", "Thông báo", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    // Event khi trường identification thay đổi
     private void identificationNumberPropertyChange(java.beans.PropertyChangeEvent evt) {
         String identification = String.valueOf(identificationNumberField.getText());
 
@@ -654,23 +708,14 @@ public class SystemView extends javax.swing.JFrame {
         }
     }
 
-    private void departureDatePropertyChange(java.beans.PropertyChangeEvent evt) {
-        Date date = (Date) departureDateSpinner.getValue();
-
-        LocalDate departureDate = convertToLocalDate(date);
-        LocalDate rentDate = LocalDate.now();
-
-        if (departureDate.isBefore(rentDate)) {
-            JOptionPane.showMessageDialog(this, "Ngày trả phải sau ngày sau thuê", "Thông báo", JOptionPane.WARNING_MESSAGE);
-        }
-    }
-
+    // Chuyển đổi từ Date sang LocalDate
     private LocalDate convertToLocalDate(Date utilDate) {
         Instant instant = utilDate.toInstant();
 
         return instant.atZone(ZoneId.systemDefault()).toLocalDate();
     }
 
+    // Lấy đường dẫn ảnh
     private String getPath(String path) {
         File file = new File(path);
 
