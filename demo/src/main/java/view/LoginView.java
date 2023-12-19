@@ -27,6 +27,7 @@ public class LoginView extends javax.swing.JFrame {
     public LoginView(UserController userController) {
         initComponents();
         this.userController = userController;
+        employeeDAO = new EmployeeDAO();
     }
 
     private void initComponents() {

@@ -181,6 +181,7 @@ public class RoomInformationView extends javax.swing.JFrame {
         checkOutButton.setFont(new java.awt.Font("Times New Roman", Font.BOLD, 14)); // NOI18N
         checkOutButton.setText("CHECK OUT");
         checkOutButton.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        checkOutButton.addActionListener(this::checkOutButtonActionPerformed);
 
         refreshButton.setText("refresh service");
         refreshButton.addActionListener(this::refreshButtonActionPerformed);
@@ -369,6 +370,12 @@ public class RoomInformationView extends javax.swing.JFrame {
         roomController.getRoomDAO().updateRoomServices(room);
         roomController.getRoomDAO().updateDepartureDate(room);
         JOptionPane.showMessageDialog(this, "Cập nhật thành công", "Thông báo", JOptionPane.PLAIN_MESSAGE);
+        this.dispose();
+    }
+
+    private void checkOutButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        new BillInformationView(room.getId()).setVisible(true);
+
         this.dispose();
     }
 

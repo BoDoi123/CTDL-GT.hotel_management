@@ -47,6 +47,7 @@ public class UserDAO {
     public void updatePassword(int userID, String newPassword) {
         try (Connection connection = DatabaseConnection.getConnection()) {
             String query = "UPDATE user SET password = ? WHERE id = ?";
+
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
                 // Hash mat khau truoc khi luu vao csdl
