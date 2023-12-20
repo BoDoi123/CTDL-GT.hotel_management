@@ -108,6 +108,30 @@ public class CustomerDAO {
         return null;
     }
 
+    public List<Customer> getCustomerByName(String nameCustomer) {
+        List<Customer> customers = new LinkedList<>();
+
+        try (Connection connection = DatabaseConnection.getConnection()) {
+            String query = "SELECT * FROM customer WHERE name = ?";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setString(1, nameCustomer);
+
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                while (resultSet.next()) {
+                    Customer customer = mapResultSetToCustomer(resultSet);
+                    customers.add(customer);
+                }
+                LOGGER.log(Level.FINE, "Got all customers from database", customers.size());
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error getting all customers from database", e);
+        }
+
+        return customers;
+    }
+
     public Customer getCustomerByIdentification(String identification) {
         try (Connection connection = DatabaseConnection.getConnection()) {
             String query = "SELECT * FROM customer WHERE identification = ?";

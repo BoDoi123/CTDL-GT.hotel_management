@@ -22,7 +22,7 @@ public class Bill {
     }
 
     public Bill(Room room) {
-        this();
+        this.id = nextID.getAndIncrement();
         this.roomID = room.getId();
         this.renterID = room.getCustomer().getId();
         this.rentDate = room.getRentDate();

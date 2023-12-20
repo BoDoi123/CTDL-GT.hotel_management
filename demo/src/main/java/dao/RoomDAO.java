@@ -58,7 +58,7 @@ public class RoomDAO {
         try (Connection connection = DatabaseConnection.getConnection()) {
             billDAO.addBill(room.getBill());
 
-            String query = "UPDATE room SET renter_id = ?, is_rented = ?, rent_date = ?, departure_date = ?, price = ?, bill_id = ? WHERE id = ?";
+            String query = "UPDATE room SET renter_id = ?, is_rented = ?, rent_date = ?, departure_date = ?, price = ? WHERE id = ?";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setInt(1, room.getRenterID());
@@ -66,13 +66,13 @@ public class RoomDAO {
                 preparedStatement.setDate(3, Date.valueOf(room.getRentDate()));
                 preparedStatement.setDate(4, Date.valueOf(room.getDepartureDate()));
                 preparedStatement.setInt(5, room.getPrice());
-                preparedStatement.setInt(6, room.getBillID());
-                preparedStatement.setInt(7, room.getId());
+                preparedStatement.setInt(6, room.getId());
 
                 preparedStatement.executeUpdate();
 
                 addRoomService(room);
                 customerDAO.customerRentRoom(room);
+                updateBillID(billDAO.getBillByRoomID(room.getId()));
                 LOGGER.log(Level.FINE, "Room rented: {0}", room.getId());
             }
         } catch (SQLException e) {
@@ -96,7 +96,22 @@ public class RoomDAO {
                 LOGGER.log(Level.FINE, "Room services added: {0}", room.getServices().size());
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error adding room services to database");
+            LOGGER.log(Level.SEVERE, "Error adding room services to database", e);
+        }
+    }
+
+    public void updateBillID(Bill bill) {
+        try (Connection connection = DatabaseConnection.getConnection()) {
+            String query = "UPDATE room SET bill_id = ? WHERE id = ?";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setInt(1, bill.getId());
+                preparedStatement.setInt(2, bill.getRoomID());
+
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error updating room in database", e);
         }
     }
 
@@ -239,6 +254,29 @@ public class RoomDAO {
         return null;
     }
 
+    public List<Room> getRoomByCustomerID(int customerID) {
+        List<Room> rooms = new ArrayList<>();
+
+        try (Connection connection = DatabaseConnection.getConnection()) {
+            String query = "SELECT * FROM room WHERE renter_id = ?";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setInt(1, customerID);
+
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                while (resultSet.next()) {
+                    Room room = mapResultSetToRoom(resultSet);
+                    rooms.add(room);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error getting all room with false", e);
+        }
+
+        return rooms;
+    }
+
     public List<Room> getRoomsWithStateFalse() {
         List<Room> rooms = new ArrayList<>();
 
@@ -344,6 +382,30 @@ public class RoomDAO {
 
         try (Connection connection = DatabaseConnection.getConnection()) {
             String query = "SELECT * FROM room_service WHERE room_id = ?";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setInt(1, roomID);
+
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    while (resultSet.next()) {
+                        String serviceName = resultSet.getString("service_name");
+                        Service service = serviceDAO.getServiceByName(serviceName);
+                        services.add(service);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error getting room services from database", e);
+        }
+
+        return services;
+    }
+
+    public List<Service> getRoomServicesByProcessing(int roomID) {
+        List<Service> services = new LinkedList<>();
+
+        try (Connection connection = DatabaseConnection.getConnection()) {
+            String query = "SELECT * FROM room_service WHERE room_id = ? AND process = 'Processing'";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setInt(1, roomID);

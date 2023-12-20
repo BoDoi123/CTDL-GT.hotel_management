@@ -45,10 +45,10 @@ CREATE TABLE IF NOT EXISTS room (
 );
 
 CREATE TABLE IF NOT EXISTS room_service (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
     room_id INTEGER,
     service_name VARCHAR(255),
     process ENUM('Finished', 'Processing') DEFAULT 'Processing',
-    PRIMARY KEY (room_id, service_name),
     FOREIGN KEY (room_id) REFERENCES room(id),
     FOREIGN KEY (service_name) REFERENCES service(name)
 );

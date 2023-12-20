@@ -142,7 +142,7 @@ public class RoomInformationView extends javax.swing.JFrame {
         roomServiceModel.addColumn("cost");
         roomServiceModel.addColumn("process");
 
-        List<Service> serviceList = room.getServices();
+        List<Service> serviceList = roomController.getRoomDAO().getRoomServicesByProcessing(roomID);
         for (Service service : serviceList) {
             roomServiceModel.addRow(new Object[]{service.getName(), service.getCost(), "Processing"});
         }
@@ -374,6 +374,17 @@ public class RoomInformationView extends javax.swing.JFrame {
     }
 
     private void checkOutButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        Date date = (Date) departureDateSpinner.getValue();
+        LocalDate departureDate = convertToLocalDate(date);
+        LocalDate rentDate = room.getRentDate();
+        if (departureDate.isBefore(rentDate) || departureDate.equals(rentDate)) {
+            JOptionPane.showMessageDialog(this, "Ngày trả phải sau ngày thuê", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        roomController.getRoomDAO().updateRoomServices(room);
+        roomController.getRoomDAO().updateDepartureDate(room);
+
         new BillInformationView(room.getId()).setVisible(true);
 
         this.dispose();

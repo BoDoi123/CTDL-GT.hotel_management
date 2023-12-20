@@ -130,6 +130,7 @@ public class SystemView extends javax.swing.JFrame {
         roomsButton.setText("QUẢN LÝ PHÒNG");
         roomsButton.setHorizontalAlignment(SwingConstants.LEFT);
         roomsButton.setPreferredSize(new Dimension(122, 55));
+        roomsButton.addActionListener(this::roomButtonActionPerformed);
 
         staffButton.setFont(new Font("Times New Roman", Font.BOLD, 12)); // NOI18N
         staffButton.setIcon(new ImageIcon(getPath("src/main/resources/static/6491361_baggage_bellhop_hotel_service_waiter_icon.png"))); // NOI18N
@@ -686,6 +687,10 @@ public class SystemView extends javax.swing.JFrame {
         for (Room room1 : rooms) {
             roomModel.addRow(new Object[]{room1.getId(), "Phòng trống", room1.getPrice()});
         }
+    }
+
+    private void roomButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        new RoomManageView().setVisible(true);
     }
 
     private void departureDateSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {

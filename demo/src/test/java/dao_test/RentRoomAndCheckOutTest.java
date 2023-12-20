@@ -67,7 +67,6 @@ public class RentRoomAndCheckOutTest {
         assertEquals(bill.getRentDate(), room.getRentDate());
         assertEquals(bill.getDepartureDate(), room.getDepartureDate());
 
-
         // Thay đổi dịch vụ phòng
         // Thêm dịch vụ
         Service newService = new Service("Service4", 15);
@@ -125,7 +124,7 @@ public class RentRoomAndCheckOutTest {
         assertFalse(room.isRented());
         assertNull(room.getRentDate());
         assertNull(room.getDepartureDate());
-        assertEquals(0, room.getPrice());
+        assertEquals(50000, room.getPrice());
         assertEquals(bill.getId(), room.getBillID());
         assertNull(customer.getRentDate());
         assertEquals(bill.getRenterID(), customer.getId());

@@ -53,8 +53,8 @@ public class Room {
                     priceCalculator = new SimplePriceCalculator(rentDate, departureDate);
                     price = priceCalculator.calculatePrice(services);
 
-                    this.bill = new Bill(this);
-                    this.billID = bill.getId();
+                    Bill bill = new Bill(this);
+                    setBill(bill);
                 } else {
                     LOGGER.log(Level.SEVERE, "departureDate must be after rentDate");
                     throw new IllegalArgumentException("departureDate must be after renDate");
@@ -68,6 +68,7 @@ public class Room {
     }
 
     public void checkout() {
+        services = new LinkedList<>();
         isRented = false;
         rentDate = null;
         departureDate = null;
@@ -110,5 +111,10 @@ public class Room {
 
     public SimplePriceCalculator getSimplePriceCalculator() {
         return new SimplePriceCalculator(this.rentDate, this.departureDate);
+    }
+
+    public void setBill(Bill bill) {
+        this.bill = bill;
+        this.billID = bill.getId();
     }
 }
