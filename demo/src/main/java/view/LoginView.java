@@ -131,6 +131,7 @@ public class LoginView extends javax.swing.JFrame {
 
     // Đăng nhập vào hệ thống
     private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        createUserAndEmployee();
         String account = String.valueOf(accountField.getText());
         String password = String.valueOf(passwordField.getPassword());
 

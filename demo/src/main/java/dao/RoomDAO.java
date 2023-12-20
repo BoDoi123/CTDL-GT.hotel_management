@@ -72,7 +72,7 @@ public class RoomDAO {
 
                 addRoomService(room);
                 customerDAO.customerRentRoom(room);
-                updateBillID(billDAO.getBillByRoomID(room.getId()));
+                updateBillID(room);
                 LOGGER.log(Level.FINE, "Room rented: {0}", room.getId());
             }
         } catch (SQLException e) {
@@ -100,13 +100,13 @@ public class RoomDAO {
         }
     }
 
-    public void updateBillID(Bill bill) {
+    public void updateBillID(Room room) {
         try (Connection connection = DatabaseConnection.getConnection()) {
             String query = "UPDATE room SET bill_id = ? WHERE id = ?";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                preparedStatement.setInt(1, bill.getId());
-                preparedStatement.setInt(2, bill.getRoomID());
+                preparedStatement.setInt(1, room.getBill().getId());
+                preparedStatement.setInt(2, room.getId());
 
                 preparedStatement.executeUpdate();
             }
@@ -153,7 +153,7 @@ public class RoomDAO {
 
     private void deleteRoomServices(Room room) {
         try (Connection connection = DatabaseConnection.getConnection()) {
-            String query = "DELETE FROM room_service WHERE room_id = ?";
+            String query = "DELETE FROM room_service WHERE room_id = ? AND process ='Processing'";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setInt(1, room.getId());

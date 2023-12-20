@@ -51,8 +51,6 @@ public class BillInformationView extends javax.swing.JFrame {
 
         room = roomController.getRoomDAO().getRoomByID(roomID);
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
         billLabel.setFont(new java.awt.Font("Times New Roman", Font.BOLD, 18)); // NOI18N
         billLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         billLabel.setText("THÔNG TIN HÓA ĐƠN");
