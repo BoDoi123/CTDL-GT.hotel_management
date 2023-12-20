@@ -2,18 +2,18 @@ package view;
 
 import controller.RoomController;
 import controller.ServiceController;
-import models.Customer;
-import models.Employee;
-import models.Room;
-import models.Service;
+import models.*;
 import dao.EmployeeDAO;
 
+import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.beans.PropertyChangeEvent;
 import java.io.File;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
+import javax.swing.event.ChangeEvent;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.DateFormatter;
 import javax.swing.text.DefaultFormatterFactory;
@@ -34,27 +34,26 @@ public class SystemView extends javax.swing.JFrame {
     private DefaultTableModel roomModel;
     private DefaultTableModel serviceModel;
     private RoomController roomController;
-    private javax.swing.JCheckBox maleCheckbox;
-    private javax.swing.JCheckBox femaleCheckbox;
-    private javax.swing.JFormattedTextField identificationNumberField;
-    private javax.swing.JSpinner birthDaySpinner;
-    private javax.swing.JSpinner departureDateSpinner;
-    private javax.swing.JTextField fullNameTextField;
-    private javax.swing.JTextField homeTownTextField;
-    private javax.swing.JTable roomTable;
-    private javax.swing.JTable serviceTable;
-    private javax.swing.JLabel staffLabel;
+    private JCheckBox maleCheckbox;
+    private JCheckBox femaleCheckbox;
+    private JFormattedTextField identificationNumberField;
+    private JSpinner birthDaySpinner;
+    private JSpinner departureDateSpinner;
+    private JTextField fullNameTextField;
+    private JTextField homeTownTextField;
+    private JTable roomTable;
+    private JTable serviceTable;
+    private JLabel staffLabel;
 
     public SystemView(int userID) {
         initComponents();
         Employee employee = employeeDAO.getEmployeeByUserID(userID);
-        staffLabel.setText("Nhân viên: " + employee.getName());
+        if (employee.getPosition().equals(User.Role.Manager)) {
+            staffLabel.setText("Quản lý: " + employee.getName());
+        } else {
+            staffLabel.setText("Nhân viên: " + employee.getName());
+        }
     }
-
-    public SystemView() {
-        initComponents();
-    }
-
 
     private void initComponents() {
         serviceController = new ServiceController();
@@ -144,6 +143,7 @@ public class SystemView extends javax.swing.JFrame {
         customerButton.setText("KHÁCH HÀNG");
         customerButton.setHorizontalAlignment(SwingConstants.LEFT);
         customerButton.setPreferredSize(new Dimension(122, 55));
+        customerButton.addActionListener(this::customerButtonActionPerformed);
 
         settingButton.setFont(new Font("Times New Roman", Font.BOLD, 12)); // NOI18N
         settingButton.setIcon(new ImageIcon(getPath("src/main/resources/static/3844474_gear_setting_settings_wheel_icon.png"))); // NOI18N
@@ -158,13 +158,13 @@ public class SystemView extends javax.swing.JFrame {
         logoutButton.setPreferredSize(new Dimension(122, 55));
         logoutButton.addActionListener(this::logoutButtonActionPerformed);
 
-        GroupLayout abiltyPanelLayout = new GroupLayout(abilityPanel);
-        abilityPanel.setLayout(abiltyPanelLayout);
-        abiltyPanelLayout.setHorizontalGroup(
-                abiltyPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addGroup(abiltyPanelLayout.createSequentialGroup()
+        GroupLayout abilityPanelLayout = new GroupLayout(abilityPanel);
+        abilityPanel.setLayout(abilityPanelLayout);
+        abilityPanelLayout.setHorizontalGroup(
+                abilityPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addGroup(abilityPanelLayout.createSequentialGroup()
                                 .addGap(43, 43, 43)
-                                .addGroup(abiltyPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
+                                .addGroup(abilityPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
                                         .addComponent(homeButton, GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
                                         .addComponent(roomsButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(staffButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -173,9 +173,9 @@ public class SystemView extends javax.swing.JFrame {
                                         .addComponent(logoutButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-        abiltyPanelLayout.setVerticalGroup(
-                abiltyPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addGroup(abiltyPanelLayout.createSequentialGroup()
+        abilityPanelLayout.setVerticalGroup(
+                abilityPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addGroup(abilityPanelLayout.createSequentialGroup()
                                 .addContainerGap()
                                 .addComponent(homeButton)
                                 .addGap(18, 18, 18)
@@ -510,8 +510,12 @@ public class SystemView extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }
 
+    private void customerButtonActionPerformed(ActionEvent evt) {
+        new CustomerManageView().setVisible(true);
+    }
+
     // Event nhấn nút refresh RoomTable
-    private void refreshButtonRoomActionPerformed(java.awt.event.ActionEvent evt) {
+    private void refreshButtonRoomActionPerformed(ActionEvent evt) {
         roomModel.setRowCount(0);
 
         List<Room> rooms = roomController.getAllRoomWithStateFalse();
@@ -521,7 +525,7 @@ public class SystemView extends javax.swing.JFrame {
     }
 
     // Event nhấn nút refresh ServiceTable
-    private void refreshButtonServiceActionPerformed(java.awt.event.ActionEvent evt) {
+    private void refreshButtonServiceActionPerformed(ActionEvent evt) {
         serviceModel.setRowCount(0);
 
         List<Service> services = roomController.getRoomDAO().getServiceDAO().getAllServices();
@@ -531,7 +535,7 @@ public class SystemView extends javax.swing.JFrame {
     }
 
     // Event nhấn nút add RoomTable
-    private void addRoomButtonActionPerformed(java.awt.event.ActionEvent evt) {
+    private void addRoomButtonActionPerformed(ActionEvent evt) {
         Room room = new Room();
         roomController.getRoomDAO().addRoom(room);
 
@@ -544,14 +548,14 @@ public class SystemView extends javax.swing.JFrame {
     }
 
     // Event nhấn nút add ServiceTable
-    private void addServiceButtonActionPerformed(java.awt.event.ActionEvent evt) {
+    private void addServiceButtonActionPerformed(ActionEvent evt) {
         AddServiceView addServiceView = new AddServiceView();
 
         addServiceView.setVisible(true);
     }
 
     // Event nhấn nút đăng xuất
-    private void logoutButtonActionPerformed(java.awt.event.ActionEvent evt) {
+    private void logoutButtonActionPerformed(ActionEvent evt) {
         LoginView loginView = new LoginView();
 
         loginView.setVisible(true);
@@ -560,7 +564,7 @@ public class SystemView extends javax.swing.JFrame {
     }
 
     // Event nhấn nút delete trong menuPopup
-    private void deleteServiceMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
+    private void deleteServiceMenuItemActionPerformed(ActionEvent evt) {
         int row = serviceTable.getSelectedRow();
         if (row == -1) {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn dịch vụ trước", "Thông báo", JOptionPane.WARNING_MESSAGE);
@@ -586,7 +590,7 @@ public class SystemView extends javax.swing.JFrame {
     }
 
     // Event nhấn nút add trong menuPopup
-    private void editServiceMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
+    private void editServiceMenuItemActionPerformed(ActionEvent evt) {
         int row = serviceTable.getSelectedRow();
 
         if (row == -1) {
@@ -600,7 +604,7 @@ public class SystemView extends javax.swing.JFrame {
     }
 
     // Event nhấn nút bắt đầu thuê
-    private void rentRoomActionPerformed(java.awt.event.ActionEvent evt) {
+    private void rentRoomActionPerformed(ActionEvent evt) {
         LocalDate rentDate = LocalDate.now();
         Date date = (Date) departureDateSpinner.getValue();
         LocalDate departureDate = convertToLocalDate(date);
@@ -690,15 +694,15 @@ public class SystemView extends javax.swing.JFrame {
         }
     }
 
-    private void homeButtonActionPerformed(java.awt.event.ActionEvent evt) {
+    private void homeButtonActionPerformed(ActionEvent evt) {
         new BillManageView().setVisible(true);
     }
 
-    private void roomButtonActionPerformed(java.awt.event.ActionEvent evt) {
+    private void roomButtonActionPerformed(ActionEvent evt) {
         new RoomManageView().setVisible(true);
     }
 
-    private void departureDateSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {
+    private void departureDateSpinnerStateChanged(ChangeEvent evt) {
         Date date = (Date) departureDateSpinner.getValue();
         LocalDate departureDate = convertToLocalDate(date);
         LocalDate rentDate = LocalDate.now();
@@ -709,7 +713,7 @@ public class SystemView extends javax.swing.JFrame {
     }
 
     // Event khi trường identification thay đổi
-    private void identificationNumberPropertyChange(java.beans.PropertyChangeEvent evt) {
+    private void identificationNumberPropertyChange(PropertyChangeEvent evt) {
         String identification = String.valueOf(identificationNumberField.getText());
 
         Customer customer = roomController.getRoomDAO().getCustomerDAO().getCustomerByIdentification(identification);
@@ -730,25 +734,5 @@ public class SystemView extends javax.swing.JFrame {
         File file = new File(path);
 
         return file.getAbsolutePath();
-    }
-
-    public static void main(String[] args) {
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException | InstantiationException | UnsupportedLookAndFeelException |
-                 IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(SystemView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-
-        java.awt.EventQueue.invokeLater(() -> {
-            JFrame frame = new SystemView();
-            frame.setVisible(true);
-            frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        });
     }
 }

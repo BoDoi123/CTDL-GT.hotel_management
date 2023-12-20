@@ -79,15 +79,15 @@ public class BillDAO {
         }
     }
 
-    public void deleteBill(int roomID) {
+    public void deleteBill(int billID) {
         try (Connection connection = DatabaseConnection.getConnection()) {
-            String query = "DELETE FROM bill WHERE room_id = ?";
+            String query = "DELETE FROM bill WHERE id = ?";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                preparedStatement.setInt(1, roomID);
+                preparedStatement.setInt(1, billID);
 
                 preparedStatement.executeUpdate();
-                LOGGER.log(Level.FINE, "Bill deleted: {0}", roomID);
+                LOGGER.log(Level.FINE, "Bill deleted: {0}", billID);
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error deleting bill from database", e);

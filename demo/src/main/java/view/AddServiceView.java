@@ -11,10 +11,10 @@ import java.awt.*;
 
 @Getter
 @Setter
-public class AddServiceView extends javax.swing.JFrame {
+public class AddServiceView extends JFrame {
     private RoomController roomController;
-    private javax.swing.JFormattedTextField costServiceField;
-    private javax.swing.JTextField nameServiceField;
+    private JFormattedTextField costServiceField;
+    private JTextField nameServiceField;
 
     public AddServiceView() {
         initComponents();
@@ -24,23 +24,23 @@ public class AddServiceView extends javax.swing.JFrame {
         roomController = new RoomController();
         JLabel jLabel1 = new JLabel();
         JLabel nameService = new JLabel();
-        nameServiceField = new javax.swing.JTextField();
+        nameServiceField = new JTextField();
         JLabel costService = new JLabel();
-        costServiceField = new javax.swing.JFormattedTextField();
+        costServiceField = new JFormattedTextField();
         JButton addServiceButton = new JButton();
 
         jLabel1.setFont(new java.awt.Font("Times New Roman", Font.BOLD, 18)); // NOI18N
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setHorizontalAlignment(SwingConstants.CENTER);
         jLabel1.setText("THÊM DỊCH VỤ MỚI");
 
-        nameService.setFont(new java.awt.Font("Times New Roman", Font.BOLD, 15)); // NOI18N
-        nameService.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        nameService.setFont(new Font("Times New Roman", Font.BOLD, 15)); // NOI18N
+        nameService.setHorizontalAlignment(SwingConstants.CENTER);
         nameService.setText("TÊN DỊCH VỤ:");
 
-        nameServiceField.setFont(new java.awt.Font("Times New Roman", Font.PLAIN, 14)); // NOI18N
+        nameServiceField.setFont(new Font("Times New Roman", Font.PLAIN, 14)); // NOI18N
 
         costService.setFont(new java.awt.Font("Times New Roman", Font.BOLD, 15)); // NOI18N
-        costService.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        costService.setHorizontalAlignment(SwingConstants.CENTER);
         costService.setText("GIÁ DỊCH VỤ:");
 
         costServiceField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#"))));

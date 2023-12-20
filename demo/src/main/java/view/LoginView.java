@@ -131,7 +131,6 @@ public class LoginView extends javax.swing.JFrame {
 
     // Đăng nhập vào hệ thống
     private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {
-        createUserAndEmployee();
         String account = String.valueOf(accountField.getText());
         String password = String.valueOf(passwordField.getPassword());
 
@@ -157,27 +156,19 @@ public class LoginView extends javax.swing.JFrame {
         this.dispose();
     }
 
-    public static void main(String[] args) {
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
-                 UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(LoginView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-
-        java.awt.EventQueue.invokeLater(() -> new LoginView().setVisible(true));
-    }
-
     private void createUserAndEmployee() {
         User user = new User("user1", "123456", User.Role.Manager);
+        User user1 = new User("user2", "123456", User.Role.Manager);
+        User user2 = new User("user3", "123456", User.Role.Manager);
         userController.getUserDAO().addUser(user);
-        Employee employee = new Employee(user, "Chu Long", "Ha Noi", "1234567", LocalDate.of(2002, 5, 22), Employee.Gender.Male, 10000000);
-//        Employee employee1 = new E
+        userController.getUserDAO().addUser(user1);
+        userController.getUserDAO().addUser(user2);
+
+        Employee employee = new Employee(user, "Chu Long", "Hà Nội", "123456789", LocalDate.of(2002, 5, 22), Employee.Gender.Male, 10000000);
+        Employee employee1 = new Employee(user1, "Trần Phú Lâm", "Phú Thọ", "12345678", LocalDate.of(2002, 5, 13), Employee.Gender.Male, 10000000);
+        Employee employee2 = new Employee(user2, "Chu Long", "Hà Tây", "1234567", LocalDate.of(2002, 5, 15), Employee.Gender.Male, 10000000);
         employeeDAO.addEmployee(employee);
+        employeeDAO.addEmployee(employee1);
+        employeeDAO.addEmployee(employee2);
     }
 }
