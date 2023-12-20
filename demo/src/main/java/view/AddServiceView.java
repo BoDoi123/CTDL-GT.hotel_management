@@ -98,13 +98,18 @@ public class AddServiceView extends javax.swing.JFrame {
         String nameService = String.valueOf(nameServiceField.getText());
         int costService = Integer.parseInt(costServiceField.getText());
 
+        Service service = roomController.getRoomDAO().getServiceDAO().getServiceByName(nameService);
         if (costService < 0 || nameService == null) {
             JOptionPane.showMessageDialog(this, "Tên hoặc giá của dịch vụ không đúng hoặc không bỏ trống", "Thêm dịch vụ thất bại", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        Service service = new Service(nameService, costService);
+        if (service != null) {
+            JOptionPane.showMessageDialog(this, "Dịch vụ này đã tồn tại", "Thêm dịch vụ thất bại", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        Service service1 = new Service(nameService, costService);
 
-        roomController.getRoomDAO().getServiceDAO().addService(service);
+        roomController.getRoomDAO().getServiceDAO().addService(service1);
 
         JOptionPane.showMessageDialog(this, "Thêm dịch vụ thành công", "Thông báo", JOptionPane.PLAIN_MESSAGE);
         this.dispose();

@@ -10,21 +10,14 @@ import models.Customer;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 
 @Getter
 @Setter
 public class BillManageView extends javax.swing.JFrame {
     private javax.swing.JTable billTable;
-    private DateTimeFormatter formatter;
     private RoomController roomController;
     private DefaultTableModel billModel;
-    private BillInformationView billInformationView;
     private int roomID;
 
     public BillManageView() {
@@ -38,14 +31,6 @@ public class BillManageView extends javax.swing.JFrame {
         billTable = new javax.swing.JTable();
         javax.swing.JButton refreshButton = new javax.swing.JButton();
         javax.swing.JButton searchButton = new javax.swing.JButton();
-        JPopupMenu billTablePopupMenu = new JPopupMenu();
-        JMenuItem checkMenuItem = new JMenuItem();
-
-        checkMenuItem.setText("Check Information");
-        billTablePopupMenu.add(checkMenuItem);
-        checkMenuItem.addActionListener(this::checkMenuItemActionPerformed);
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         billLabel.setFont(new java.awt.Font("Times New Roman", Font.BOLD, 16)); // NOI18N
         billLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -63,20 +48,15 @@ public class BillManageView extends javax.swing.JFrame {
         billModel.addColumn("tên khách hàng");
         billModel.addColumn("mã khách hàng");
         billModel.addColumn("mã phòng");
-        billModel.addColumn("ngày thanh toán");
         billModel.addColumn("Giá tiền");
 
-        formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         List<Bill> billList = roomController.getRoomDAO().getBillDAO().getAllFinishedBills();
-        for (Bill bill : billList) {
-            billInformationView = new BillInformationView(bill.getId());
-            Date date = (Date) billInformationView.getDateSpinner().getValue();
-            LocalDate localDate = convertToLocalDate(date);
-
-            billModel.addRow(new Object[]{bill.getId(), roomController.getRoomDAO().getCustomerDAO().getCustomerByID(bill.getRenterID()).getName(), roomController.getRoomDAO().getCustomerDAO().getCustomerByID(bill.getRenterID()).getId(), bill.getRoomID(), localDate.format(formatter), bill.getPrice()});
+        if (!billList.isEmpty()) {
+            for (Bill bill : billList) {
+                billModel.addRow(new Object[]{bill.getId(), roomController.getRoomDAO().getCustomerDAO().getCustomerByID(bill.getRenterID()).getName(), roomController.getRoomDAO().getCustomerDAO().getCustomerByID(bill.getRenterID()).getId(), bill.getRoomID(), bill.getPrice()});
+            }
         }
         jScrollPane1.setViewportView(billTable);
-        billTable.setComponentPopupMenu(billTablePopupMenu);
 
         refreshButton.setFont(new java.awt.Font("Times New Roman", Font.BOLD, 14)); // NOI18N
         refreshButton.setText("Refresh");
@@ -121,55 +101,31 @@ public class BillManageView extends javax.swing.JFrame {
         );
 
         pack();
-    }
-
-    private void checkMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
-        int row = billTable.getSelectedRow();
-
-        if (row == -1) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn hóa đơn trước", "Thông báo", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        int roomID = Integer.parseInt(String.valueOf(billTable.getValueAt(row, 3)));
-
-        billInformationView = new BillInformationView(roomID);
+        setLocationRelativeTo(null);
     }
 
     private void refreshButtonActionPerformed(java.awt.event.ActionEvent evt) {
         billModel.setRowCount(0);
 
         List<Bill> billList = roomController.getRoomDAO().getBillDAO().getAllFinishedBills();
-        for (Bill bill : billList) {
-            billInformationView = new BillInformationView(bill.getId());
-            Date date = (Date) billInformationView.getDateSpinner().getValue();
-            LocalDate localDate = convertToLocalDate(date);
-
-            billModel.addRow(new Object[]{bill.getId(), roomController.getRoomDAO().getCustomerDAO().getCustomerByID(bill.getRenterID()).getName(), roomController.getRoomDAO().getCustomerDAO().getCustomerByID(bill.getRenterID()).getId(), bill.getRoomID(), localDate.format(formatter), bill.getPrice()});
-        }
-    }
-
-    private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {
-        String name = JOptionPane.showInputDialog(this, "Nhập tên khách hàng", "Thông báo");
-        billModel.setRowCount(0);
-
-        List<Customer> customers = roomController.getRoomDAO().getCustomerDAO().getCustomerByName(name);
-        for (Customer custmer : customers) {
-            List<Bill> bills = roomController.getRoomDAO().getBillDAO().getBillsByCstomerID(custmer.getId());
-
-            for (Bill bill : bills) {
-                billInformationView = new BillInformationView(bill.getId());
-                Date date = (Date) billInformationView.getDateSpinner().getValue();
-                LocalDate localDate = convertToLocalDate(date);
-
-                billModel.addRow(new Object[]{bill.getId(), roomController.getRoomDAO().getCustomerDAO().getCustomerByID(bill.getRenterID()).getName(), roomController.getRoomDAO().getCustomerDAO().getCustomerByID(bill.getRenterID()).getId(), bill.getRoomID(), localDate.format(formatter), bill.getPrice()});
+        if (!billList.isEmpty()) {
+            for (Bill bill : billList) {
+                billModel.addRow(new Object[]{bill.getId(), roomController.getRoomDAO().getCustomerDAO().getCustomerByID(bill.getRenterID()).getName(), roomController.getRoomDAO().getCustomerDAO().getCustomerByID(bill.getRenterID()).getId(), bill.getRoomID(), bill.getPrice()});
             }
         }
     }
 
-    private LocalDate convertToLocalDate(Date utilDate) {
-        Instant instant = utilDate.toInstant();
+    private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        String name = JOptionPane.showInputDialog(this, "Nhập tên khách hàng", "");
+        billModel.setRowCount(0);
 
-        return instant.atZone(ZoneId.systemDefault()).toLocalDate();
+        List<Customer> customers = roomController.getRoomDAO().getCustomerDAO().getCustomerByName(name);
+        for (Customer customer : customers) {
+            List<Bill> bills = roomController.getRoomDAO().getBillDAO().getBillsByCustomerID(customer.getId());
+
+            for (Bill bill : bills) {
+                billModel.addRow(new Object[]{bill.getId(), roomController.getRoomDAO().getCustomerDAO().getCustomerByID(bill.getRenterID()).getName(), roomController.getRoomDAO().getCustomerDAO().getCustomerByID(bill.getRenterID()).getId(), bill.getRoomID(), bill.getPrice()});
+            }
+        }
     }
 }

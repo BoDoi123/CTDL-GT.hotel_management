@@ -176,7 +176,8 @@ public class LoginView extends javax.swing.JFrame {
     private void createUserAndEmployee() {
         User user = new User("user1", "123456", User.Role.Manager);
         userController.getUserDAO().addUser(user);
-        Employee employee = new Employee(user, "Chu Long", "Ha Noi", "1234567", LocalDate.of(2002, 05, 22), Employee.Gender.Male, 10000000);
+        Employee employee = new Employee(user, "Chu Long", "Ha Noi", "1234567", LocalDate.of(2002, 5, 22), Employee.Gender.Male, 10000000);
+//        Employee employee1 = new E
         employeeDAO.addEmployee(employee);
     }
 }

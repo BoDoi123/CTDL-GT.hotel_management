@@ -383,7 +383,7 @@ public class RoomInformationView extends javax.swing.JFrame {
         roomController.getRoomDAO().updateRoomServices(room);
         roomController.getRoomDAO().updateDepartureDate(room);
 
-        new BillInformationView(room.getId()).setVisible(true);
+        new BillInformationView(room.getId(), room.getBillID()).setVisible(true);
 
         this.dispose();
     }

@@ -56,8 +56,12 @@ public class RoomManageView extends javax.swing.JFrame {
 
         formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         List<Room> rooms = roomController.getAllRoomWithStateTrue();
-        for (Room room : rooms) {
-            roomModel.addRow(new Object[]{room.getId(), room.getCustomer().getName(), room.getCustomer().getId(), room.getRentDate().format(formatter), room.getDepartureDate().format(formatter), room.getPrice()});
+        if (!rooms.isEmpty()) {
+            for (Room room : rooms) {
+                roomModel.addRow(new Object[]{room.getId(), room.getCustomer().getName(), room.getCustomer().getId(), room.getRentDate().format(formatter), room.getDepartureDate().format(formatter), room.getPrice()});
+            }
+        } else {
+            roomModel.setRowCount(0);
         }
         jScrollPane1.setViewportView(roomTable);
         roomTable.setComponentPopupMenu(roomTablePopupMenu);
@@ -126,12 +130,12 @@ public class RoomManageView extends javax.swing.JFrame {
     }
 
     private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {
-        String name = JOptionPane.showInputDialog(this, "Nhập tên khách hàng", "Thông báo");
+        String name = JOptionPane.showInputDialog(this, "Nhập tên khách hàng", "");
         roomModel.setRowCount(0);
 
         List<Customer> customers = roomController.getRoomDAO().getCustomerDAO().getCustomerByName(name);
-        for (Customer custmer : customers) {
-            List<Room> rooms = roomController.getRoomDAO().getRoomByCustomerID(custmer.getId());
+        for (Customer customer : customers) {
+            List<Room> rooms = roomController.getRoomDAO().getRoomByCustomerID(customer.getId());
 
             for (Room room : rooms) {
                 roomModel.addRow(new Object[]{room.getId(), room.getCustomer().getName(), room.getCustomer().getId(), room.getRentDate().format(formatter), room.getDepartureDate().format(formatter), room.getPrice()});
@@ -143,8 +147,10 @@ public class RoomManageView extends javax.swing.JFrame {
         roomModel.setRowCount(0);
 
         List<Room> rooms = roomController.getAllRoomWithStateTrue();
-        for (Room room : rooms) {
-            roomModel.addRow(new Object[]{room.getId(), room.getCustomer().getName(), room.getCustomer().getId(), room.getRentDate().format(formatter), room.getDepartureDate().format(formatter), room.getPrice()});
+        if (!rooms.isEmpty()) {
+            for (Room room : rooms) {
+                roomModel.addRow(new Object[]{room.getId(), room.getCustomer().getName(), room.getCustomer().getId(), room.getRentDate().format(formatter), room.getDepartureDate().format(formatter), room.getPrice()});
+            }
         }
     }
 }

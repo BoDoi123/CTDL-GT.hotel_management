@@ -124,6 +124,7 @@ public class SystemView extends javax.swing.JFrame {
         homeButton.setIcon(new ImageIcon(getPath("src/main/resources/static/7310961_snow_home_christmas_xmas_house_icon.png"))); // NOI18N
         homeButton.setText("THÔNG KÊ");
         homeButton.setHorizontalAlignment(SwingConstants.LEFT);
+        homeButton.addActionListener(this::homeButtonActionPerformed);
 
         roomsButton.setFont(new Font("Times New Roman", Font.BOLD, 12)); // NOI18N
         roomsButton.setIcon(new ImageIcon(getPath("src/main/resources/static/4171360_bed_couple_day_love_lover_icon.png"))); // NOI18N
@@ -687,6 +688,10 @@ public class SystemView extends javax.swing.JFrame {
         for (Room room1 : rooms) {
             roomModel.addRow(new Object[]{room1.getId(), "Phòng trống", room1.getPrice()});
         }
+    }
+
+    private void homeButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        new BillManageView().setVisible(true);
     }
 
     private void roomButtonActionPerformed(java.awt.event.ActionEvent evt) {

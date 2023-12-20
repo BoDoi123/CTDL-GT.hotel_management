@@ -30,7 +30,7 @@ public class BillDAO {
                 preparedStatement.setDate(3, Date.valueOf(bill.getRentDate()));
                 preparedStatement.setDate(4, Date.valueOf(bill.getDepartureDate()));
                 preparedStatement.setInt(5, bill.getPrice());
-                preparedStatement.setString(6, ":Processing");
+                preparedStatement.setString(6, "Processing");
 
                 preparedStatement.executeUpdate();
 
@@ -65,7 +65,7 @@ public class BillDAO {
 
     public void finishBill(Room room) {
         try (Connection connection = DatabaseConnection.getConnection()) {
-            String query = "UPDATE bill SET process WHERE room_id = ? AND process = 'Processing'";
+            String query = "UPDATE bill SET process = ? WHERE room_id = ? AND process = 'Processing'";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setString(1, "Finished");
@@ -94,7 +94,7 @@ public class BillDAO {
         }
     }
 
-    public List<Bill> getBillsByCstomerID(int customerID) {
+    public List<Bill> getBillsByCustomerID(int customerID) {
         List<Bill> bills = new LinkedList<>();
 
         try (Connection connection = DatabaseConnection.getConnection()) {

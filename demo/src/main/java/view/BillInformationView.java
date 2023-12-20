@@ -8,6 +8,7 @@ import models.Bill;
 import models.Customer;
 import models.Room;
 import models.Service;
+import org.apache.catalina.webresources.ClasspathURLStreamHandler;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -25,10 +26,11 @@ public class BillInformationView extends javax.swing.JFrame {
     private Room room;
     private RoomController roomController;
     private JSpinner dateSpinner;
-    private final int billID = room.getBillID();
+    private int billID;
 
-    public BillInformationView(int roomID) {
+    public BillInformationView(int roomID, int billID) {
         initComponents(roomID, billID);
+
     }
 
     private void initComponents(int roomID, int billID) {
@@ -119,7 +121,7 @@ public class BillInformationView extends javax.swing.JFrame {
         roomServiceModel.addColumn("service_name");
         roomServiceModel.addColumn("cost");
 
-        List<Service> serviceList = room.getServices();
+        List<Service> serviceList = roomController.getRoomDAO().getRoomServicesByProcessing(room.getId());
         for (Service service : serviceList) {
             roomServiceModel.addRow(new Object[]{service.getName(), service.getCost()});
         }
@@ -160,7 +162,7 @@ public class BillInformationView extends javax.swing.JFrame {
         submitButton.addActionListener(this::submitButtonActionPerformed);
 
         priceBillText.setFont(new java.awt.Font("Times New Roman", Font.BOLD, 15)); // NOI18N
-        priceBillText.setText(String.valueOf(bill.getPrice()));
+        priceBillText.setText(String.valueOf(room.getPrice()));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

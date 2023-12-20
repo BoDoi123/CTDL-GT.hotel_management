@@ -194,11 +194,10 @@ public class RoomDAO {
 
     private void finishedServices(Room room) {
         try (Connection connection = DatabaseConnection.getConnection()) {
-            String query = "UPDATE room_service SET process = ? WHERE room_id = ?";
+            String query = "DELETE FROM room_service WHERE room_id = ?";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                preparedStatement.setString(1, "Finished");
-                preparedStatement.setInt(2, room.getId());
+                preparedStatement.setInt(1, room.getId());
 
                 preparedStatement.executeUpdate();
                 LOGGER.log(Level.FINE, "Finished room services: {0}", room.getId());
