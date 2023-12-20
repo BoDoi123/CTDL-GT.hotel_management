@@ -1,5 +1,8 @@
 package view;
 
+import lombok.Setter;
+import lombok.Getter;
+
 import controller.RoomController;
 import models.Customer;
 import models.Room;
@@ -10,17 +13,13 @@ import java.awt.*;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+@Getter
+@Setter
 public class RoomManageView extends javax.swing.JFrame {
     private DateTimeFormatter formatter;
     private RoomController roomController;
     private DefaultTableModel roomModel;
-    private javax.swing.JMenuItem checkMenuItem;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable roomTable;
-    private javax.swing.JPopupMenu roomTablePopupMenu;
-    private javax.swing.JLabel searchLabel;
-    private javax.swing.JTextField searchTextField;
 
     public RoomManageView() {
         initComponents();
@@ -28,13 +27,13 @@ public class RoomManageView extends javax.swing.JFrame {
 
     private void initComponents() {
         roomController = new RoomController();
-        roomTablePopupMenu = new javax.swing.JPopupMenu();
-        checkMenuItem = new javax.swing.JMenuItem();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        JPopupMenu roomTablePopupMenu = new JPopupMenu();
+        JMenuItem checkMenuItem = new JMenuItem();
+        JScrollPane jScrollPane1 = new JScrollPane();
         roomTable = new javax.swing.JTable();
-        jLabel1 = new javax.swing.JLabel();
-        searchTextField = new javax.swing.JTextField();
-        searchLabel = new javax.swing.JLabel();
+        JLabel jLabel1 = new JLabel();
+        JButton refreshButton = new javax.swing.JButton();
+        JButton searchButton = new javax.swing.JButton();
 
         checkMenuItem.setText("check information");
         roomTablePopupMenu.add(checkMenuItem);
@@ -67,12 +66,13 @@ public class RoomManageView extends javax.swing.JFrame {
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("DANH SÁCH PHÒNG ĐANG THUÊ");
 
-//        searchTextField.addPropertyChangeListener(this::searchTextFieldStateChanged);
+        refreshButton.setFont(new java.awt.Font("Times New Roman", Font.BOLD, 14)); // NOI18N
+        refreshButton.setText("Refresh");
+        refreshButton.addActionListener(this::refreshButtonActionPerformed);
 
-        searchLabel.setFont(new java.awt.Font("Times New Roman", Font.BOLD, 14)); // NOI18N
-        searchLabel.setText("Search");
-
-        searchTextField.addPropertyChangeListener(this::searchTextFieldStateChanged);
+        searchButton.setFont(new java.awt.Font("Times New Roman", Font.BOLD, 14)); // NOI18N
+        searchButton.setText("Search");
+        searchButton.addActionListener(this::searchButtonActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -81,13 +81,13 @@ public class RoomManageView extends javax.swing.JFrame {
                         .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jScrollPane1)
+                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 789, Short.MAX_VALUE)
                                         .addGroup(layout.createSequentialGroup()
                                                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 266, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 240, Short.MAX_VALUE)
-                                                .addComponent(searchLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(searchButton, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(18, 18, 18)
+                                                .addComponent(refreshButton, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -97,8 +97,8 @@ public class RoomManageView extends javax.swing.JFrame {
                                         .addGroup(layout.createSequentialGroup()
                                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                                        .addComponent(searchTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                        .addComponent(searchLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                        .addComponent(refreshButton)
+                                                        .addComponent(searchButton))
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
                                         .addGroup(layout.createSequentialGroup()
                                                 .addContainerGap()
@@ -125,60 +125,26 @@ public class RoomManageView extends javax.swing.JFrame {
         new RoomInformationView(roomID).setVisible(true);
     }
 
-    private void searchTextFieldStateChanged(java.beans.PropertyChangeEvent evt) {
-        String text = searchTextField.getText();
-        if (text.isBlank()) {
-            return;
-        }
+    private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        String name = JOptionPane.showInputDialog(this, "Nhập tên khách hàng", "Thông báo");
+        roomModel.setRowCount(0);
 
-        if (isInteger(text)) {
-            roomModel.setRowCount(0);
-            int roomId = Integer.parseInt(text);
-            Room room = roomController.getRoomDAO().getRoomByID(roomId);
-            if (room == null) {
-                return;
+        List<Customer> customers = roomController.getRoomDAO().getCustomerDAO().getCustomerByName(name);
+        for (Customer custmer : customers) {
+            List<Room> rooms = roomController.getRoomDAO().getRoomByCustomerID(custmer.getId());
+
+            for (Room room : rooms) {
+                roomModel.addRow(new Object[]{room.getId(), room.getCustomer().getName(), room.getCustomer().getId(), room.getRentDate().format(formatter), room.getDepartureDate().format(formatter), room.getPrice()});
             }
+        }
+    }
 
+    private void refreshButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        roomModel.setRowCount(0);
+
+        List<Room> rooms = roomController.getAllRoomWithStateTrue();
+        for (Room room : rooms) {
             roomModel.addRow(new Object[]{room.getId(), room.getCustomer().getName(), room.getCustomer().getId(), room.getRentDate().format(formatter), room.getDepartureDate().format(formatter), room.getPrice()});
-        } else {
-            roomModel.setRowCount(0);
-            List<Customer> customers = roomController.getRoomDAO().getCustomerDAO().getCustomerByName(text);
-            if (customers.isEmpty()) {
-                return;
-            }
-
-            for (Customer customer : customers) {
-                List<Room> rooms = roomController.getRoomDAO().getRoomByCustomerID(customer.getId());
-
-                for (Room room : rooms) {
-                    roomModel.addRow(new Object[]{room.getId(), room.getCustomer().getName(), room.getCustomer().getId(), room.getRentDate().format(formatter), room.getDepartureDate().format(formatter), room.getPrice()});
-                }
-            }
         }
-    }
-
-    private static boolean isInteger(String s) {
-        try {
-            Integer.parseInt(s);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
-
-    public static void main(String[] args) {
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
-                 UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(RoomManageView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-
-        java.awt.EventQueue.invokeLater(() -> new RoomManageView().setVisible(true));
     }
 }

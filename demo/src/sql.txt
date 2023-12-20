@@ -60,6 +60,7 @@ CREATE TABLE IF NOT EXISTS bill (
     rent_date DATE,
     departure_date DATE,
     price INTEGER NOT NULL DEFAULT 0,
+    process ENUM('Finished', 'Processing'),
     FOREIGN KEY (room_id) REFERENCES room(id),
     FOREIGN KEY (renter_id) REFERENCES customer(id)
 );

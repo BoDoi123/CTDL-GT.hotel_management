@@ -184,6 +184,7 @@ public class RoomDAO {
 
                 customerDAO.customerCheckOut(room);
                 finishedServices(room);
+                billDAO.finishBill(room);
                 LOGGER.log(Level.FINE, "Room checked out: {0}", room.getId());
             }
         } catch (SQLException e) {
@@ -258,7 +259,7 @@ public class RoomDAO {
         List<Room> rooms = new ArrayList<>();
 
         try (Connection connection = DatabaseConnection.getConnection()) {
-            String query = "SELECT * FROM room WHERE renter_id = ?";
+            String query = "SELECT * FROM room WHERE renter_id = ? AND is_rented = 1";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setInt(1, customerID);

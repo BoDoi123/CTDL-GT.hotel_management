@@ -1,6 +1,11 @@
 package view;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import controller.RoomController;
+import models.Bill;
+import models.Customer;
 import models.Room;
 import models.Service;
 
@@ -13,16 +18,20 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+@Getter
+@Setter
 public class BillInformationView extends javax.swing.JFrame {
     private int roomID;
     private Room room;
     private RoomController roomController;
+    private JSpinner dateSpinner;
+    private final int billID = room.getBillID();
 
     public BillInformationView(int roomID) {
-        initComponents(roomID);
+        initComponents(roomID, billID);
     }
 
-    private void initComponents(int roomID) {
+    private void initComponents(int roomID, int billID) {
         roomController = new RoomController();
         JLabel billLabel = new JLabel();
         JLabel billIdLabel = new JLabel();
@@ -34,7 +43,7 @@ public class BillInformationView extends javax.swing.JFrame {
         JLabel customerIdLabel = new JLabel();
         JLabel customerIdText = new JLabel();
         JLabel dateLabel = new JLabel();
-        JSpinner dateSpinner = new JSpinner();
+        dateSpinner = new JSpinner();
         JLabel dateLabel1 = new JLabel();
         JScrollPane jScrollPane1 = new JScrollPane();
         JTable roomServiceTable = new JTable();
@@ -49,6 +58,8 @@ public class BillInformationView extends javax.swing.JFrame {
         JButton submitButton = new JButton();
         JLabel priceBillText = new JLabel();
 
+        Bill bill = roomController.getRoomDAO().getBillDAO().getBillById(billID);
+        Customer customer = roomController.getRoomDAO().getCustomerDAO().getCustomerByID(bill.getRenterID());
         room = roomController.getRoomDAO().getRoomByID(roomID);
 
         billLabel.setFont(new java.awt.Font("Times New Roman", Font.BOLD, 18)); // NOI18N
@@ -65,19 +76,19 @@ public class BillInformationView extends javax.swing.JFrame {
         roomIdLabel.setText("Mã phòng:");
 
         billIdText.setFont(new java.awt.Font("Times New Roman", Font.BOLD, 15)); // NOI18N
-        billIdText.setText(String.valueOf(room.getBillID()));
+        billIdText.setText(String.valueOf(billID));
 
         fullNameLabel.setFont(new java.awt.Font("Times New Roman", Font.BOLD, 16)); // NOI18N
         fullNameLabel.setText("Tên khách hàng:");
 
         fullNameText.setFont(new java.awt.Font("Times New Roman", Font.BOLD, 15)); // NOI18N
-        fullNameText.setText(room.getCustomer().getName());
+        fullNameText.setText(customer.getName());
 
         customerIdLabel.setFont(new java.awt.Font("Times New Roman", Font.BOLD, 16)); // NOI18N
         customerIdLabel.setText("Mã khách hàng:");
 
         customerIdText.setFont(new java.awt.Font("Times New Roman", Font.BOLD, 15)); // NOI18N
-        customerIdText.setText(String.valueOf(room.getCustomer().getId()));
+        customerIdText.setText(String.valueOf(customer.getId()));
 
         dateLabel.setFont(new java.awt.Font("Times New Roman", Font.BOLD, 16)); // NOI18N
         dateLabel.setText("Ngày thanh toán:");
@@ -149,7 +160,7 @@ public class BillInformationView extends javax.swing.JFrame {
         submitButton.addActionListener(this::submitButtonActionPerformed);
 
         priceBillText.setFont(new java.awt.Font("Times New Roman", Font.BOLD, 15)); // NOI18N
-        priceBillText.setText(String.valueOf(room.getPrice()));
+        priceBillText.setText(String.valueOf(bill.getPrice()));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

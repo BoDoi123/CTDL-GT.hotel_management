@@ -22,7 +22,7 @@ public class BillDAO {
     // Thao tac co ban
     public void addBill(Bill bill) {
         try (Connection connection = DatabaseConnection.getConnection()) {
-            String query = "INSERT INTO bill (room_id, renter_id, rent_date, departure_date, price) VALUES (?, ?, ?, ?, ?)";
+            String query = "INSERT INTO bill (room_id, renter_id, rent_date, departure_date, price, process) VALUES (?, ?, ?, ?, ?, ?)";
 
             try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
                 preparedStatement.setInt(1, bill.getRoomID());
@@ -30,6 +30,7 @@ public class BillDAO {
                 preparedStatement.setDate(3, Date.valueOf(bill.getRentDate()));
                 preparedStatement.setDate(4, Date.valueOf(bill.getDepartureDate()));
                 preparedStatement.setInt(5, bill.getPrice());
+                preparedStatement.setString(6, ":Processing");
 
                 preparedStatement.executeUpdate();
 
@@ -62,6 +63,22 @@ public class BillDAO {
         }
     }
 
+    public void finishBill(Room room) {
+        try (Connection connection = DatabaseConnection.getConnection()) {
+            String query = "UPDATE bill SET process WHERE room_id = ? AND process = 'Processing'";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setString(1, "Finished");
+                preparedStatement.setInt(2, room.getId());
+
+                preparedStatement.executeUpdate();
+                LOGGER.log(Level.FINE, "Bill updated: {0}", room.getBillID());
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error updating bill to database", e);
+        }
+    }
+
     public void deleteBill(int roomID) {
         try (Connection connection = DatabaseConnection.getConnection()) {
             String query = "DELETE FROM bill WHERE room_id = ?";
@@ -75,6 +92,50 @@ public class BillDAO {
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error deleting bill from database", e);
         }
+    }
+
+    public List<Bill> getBillsByCstomerID(int customerID) {
+        List<Bill> bills = new LinkedList<>();
+
+        try (Connection connection = DatabaseConnection.getConnection()) {
+            String query = "SELECT * FROM bill WHERE renter_id = ? AND process = 'Finished'";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setInt(1, customerID);
+
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                while (resultSet.next()) {
+                    bills.add(mapResultSetToBill(resultSet));
+                }
+                LOGGER.log(Level.FINE, "Got all bills: {0}", bills.size());
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error getting all bills from database", e);
+        }
+
+        return bills;
+    }
+
+    public List<Bill> getAllFinishedBills() {
+        List<Bill> bills = new LinkedList<>();
+
+        try (Connection connection = DatabaseConnection.getConnection()) {
+            String query = "SELECT * FROM bill WHERE process = 'Finished'";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                while (resultSet.next()) {
+                    bills.add(mapResultSetToBill(resultSet));
+                }
+                LOGGER.log(Level.FINE, "Got all bills: {0}", bills.size());
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error getting all bills from database", e);
+        }
+
+        return bills;
     }
 
     public List<Bill> getAllBill() {
@@ -108,6 +169,27 @@ public class BillDAO {
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     if (resultSet.next()) {
                         LOGGER.log(Level.FINE, "Bill retrieved: {0}", roomID);
+                        return mapResultSetToBill(resultSet);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error getting bill from database", e);
+        }
+
+        return null;
+    }
+
+    public Bill getBillById(int billID) {
+        try (Connection connection = DatabaseConnection.getConnection()) {
+            String query = "SELECT * FROM bill WHERE id = ?";
+
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setInt(1, billID);
+
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        LOGGER.log(Level.FINE, "Bill retrieved: {0}", billID);
                         return mapResultSetToBill(resultSet);
                     }
                 }

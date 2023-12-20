@@ -21,8 +21,6 @@ public class RoomInformationView extends javax.swing.JFrame {
     private Room room;
     private DefaultTableModel serviceModel;
     private RoomController roomController;
-    private javax.swing.JMenuItem addRoomServiceMenu;
-    private javax.swing.JMenuItem deleteRoomServiceMenu;
     private javax.swing.JSpinner departureDateSpinner;
     private javax.swing.JLabel pricePredictText;
     private javax.swing.JTable roomServiceTable;
@@ -35,9 +33,9 @@ public class RoomInformationView extends javax.swing.JFrame {
     private void initComponents(int roomID) {
         roomController = new RoomController();
         JPopupMenu roomServicePopupMenu = new JPopupMenu();
-        deleteRoomServiceMenu = new javax.swing.JMenuItem();
+        JMenuItem deleteRoomServiceMenu = new JMenuItem();
         JPopupMenu servicePopupMenu = new JPopupMenu();
-        addRoomServiceMenu = new javax.swing.JMenuItem();
+        JMenuItem addRoomServiceMenu = new JMenuItem();
         JLabel titleLabel = new JLabel();
         JLabel jLabel1 = new JLabel();
         JLabel roomIDLabel = new JLabel();

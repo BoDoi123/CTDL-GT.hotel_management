@@ -1,11 +1,16 @@
 package view;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import controller.RoomController;
 import models.Service;
 
 import javax.swing.*;
 import java.awt.*;
 
+@Getter
+@Setter
 public class AddServiceView extends javax.swing.JFrame {
     private RoomController roomController;
     private javax.swing.JFormattedTextField costServiceField;

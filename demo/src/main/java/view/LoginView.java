@@ -11,7 +11,7 @@ import java.awt.*;
 import java.time.LocalDate;
 
 public class LoginView extends javax.swing.JFrame {
-    private EmployeeDAO employeeDAO;
+    private final EmployeeDAO employeeDAO;
     private final UserController userController;
     private javax.swing.JPasswordField passwordField;
     private javax.swing.JTextField accountField;
