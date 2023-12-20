@@ -122,7 +122,7 @@ public class SystemView extends javax.swing.JFrame {
 
         homeButton.setFont(new Font("Times New Roman", Font.BOLD, 13)); // NOI18N
         homeButton.setIcon(new ImageIcon(getPath("src/main/resources/static/7310961_snow_home_christmas_xmas_house_icon.png"))); // NOI18N
-        homeButton.setText("HOME");
+        homeButton.setText("THÔNG KÊ");
         homeButton.setHorizontalAlignment(SwingConstants.LEFT);
 
         roomsButton.setFont(new Font("Times New Roman", Font.BOLD, 12)); // NOI18N
