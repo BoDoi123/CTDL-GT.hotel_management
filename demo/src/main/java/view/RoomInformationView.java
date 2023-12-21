@@ -25,6 +25,7 @@ public class RoomInformationView extends javax.swing.JFrame {
     private javax.swing.JLabel pricePredictText;
     private javax.swing.JTable roomServiceTable;
     private javax.swing.JTable serviceTable;
+    private List<Service> serviceList;
 
     public RoomInformationView(int roomID) {
         initComponents(roomID);
@@ -140,7 +141,7 @@ public class RoomInformationView extends javax.swing.JFrame {
         roomServiceModel.addColumn("cost");
         roomServiceModel.addColumn("process");
 
-        List<Service> serviceList = roomController.getRoomDAO().getRoomServicesByProcessing(roomID);
+        serviceList = roomController.getRoomDAO().getRoomServicesByProcessing(roomID);
         for (Service service : serviceList) {
             roomServiceModel.addRow(new Object[]{service.getName(), service.getCost(), "Processing"});
         }
@@ -294,15 +295,15 @@ public class RoomInformationView extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn dịch vụ trước", "Thông báo", JOptionPane.WARNING_MESSAGE);
         } else {
             String nameService = String.valueOf(roomServiceTable.getValueAt(row, 0));
-            List<Service> services = roomController.getRoomDAO().getRoomServicesByProcessing(room.getId());
+            serviceList = roomController.getRoomDAO().getRoomServicesByProcessing(room.getId());
 
-            services.removeIf(service -> service.getName().equals(nameService));
-            room.setServices(services);
+            serviceList.removeIf(service -> service.getName().equals(nameService));
+            room.setServices(serviceList);
 
             pricePredictText.setText(String.valueOf(room.getPrice()));
 
             roomServiceModel.setRowCount(0);
-            for (Service service1 : services) {
+            for (Service service1 : serviceList) {
                 roomServiceModel.addRow(new Object[]{service1.getName(), service1.getCost(), "Processing"});
             }
         }
@@ -317,17 +318,16 @@ public class RoomInformationView extends javax.swing.JFrame {
             String nameService = String.valueOf(serviceTable.getValueAt(row, 0));
             int costService = Integer.parseInt(String.valueOf(serviceTable.getValueAt(row, 1)));
             Service service = new Service(nameService, costService);
-            List<Service> services = roomController.getRoomDAO().getRoomServicesByProcessing(room.getId());
 
-            for (Service service1 : services) {
+            for (Service service1 : serviceList) {
                 if (service1.getName().equals(nameService)) {
                     JOptionPane.showMessageDialog(this, "Đã có dịch vụ nảy", "Thông báo", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
             }
-            services.add(service);
+            serviceList.add(service);
 
-            room.setServices(services);
+            room.setServices(serviceList);
             pricePredictText.setText(String.valueOf(room.getPrice()));
 
             roomServiceModel.addRow(new Object[]{nameService, costService, "Processing"});
